@@ -1,0 +1,454 @@
+﻿@model MenuViewModel
+<link rel="stylesheet" href="~/css/menu.css" asp-append-version="true" />
+<style>
+    :root {
+        --primary-color: #ff6b6b;
+        --secondary-color: #4ecdc4;
+        --accent-color: #ffe66d;
+        --text-dark: #2c3e50;
+        --text-light: #7f8c8d;
+        --bg-light: #f8f9fa;
+        --shadow-soft: 0 10px 40px rgba(0,0,0,0.1);
+        --shadow-hover: 0 20px 60px rgba(0,0,0,0.15);
+        --gradient-primary: linear-gradient(135deg, #EEB462 0%, #CD7672 100%);
+        --gradient-secondary: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+    }
+
+    body {
+        background: linear-gradient(135deg, #FFDD94 0%, #FA897B 100%);
+        min-height: 100vh;
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    .menu-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        box-shadow: var(--shadow-soft);
+        margin: 2rem 0;
+        overflow: hidden;
+    }
+
+    .menu-header {
+        background: var(--gradient-primary);
+        padding: 2rem;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .menu-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            animation: float 20s infinite linear;
+        }
+
+
+    .menu-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .menu-subtitle {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+        font-size: 1.1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .sidebar {
+        background: white;
+        padding: 2rem;
+        border-right: 1px solid #e9ecef;
+    }
+
+    .category-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .category-item {
+        margin-bottom: 0.5rem;
+    }
+
+    .category-link {
+        display: block;
+        padding: 1rem 1.5rem;
+        color: var(--text-dark);
+        text-decoration: none;
+        border-radius: 15px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        font-weight: 500;
+    }
+
+        .category-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-secondary);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .category-link:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+            .category-link:hover::before {
+                left: 0;
+            }
+
+        .category-link.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+    .food-grid {
+        padding: 2rem;
+        background: var(--bg-light);
+    }
+
+    .food-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow-soft);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        position: relative;
+    }
+
+        .food-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .food-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+
+            .food-card:hover::before {
+                transform: translateX(100%);
+            }
+
+    .food-image {
+        height: 220px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .food-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+    .food-card:hover .food-image img {
+        transform: scale(1.1);
+    }
+
+    .price-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: var(--gradient-primary);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        z-index: 2;
+    }
+
+    .food-content {
+        padding: 1.5rem;
+    }
+
+    .food-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+    }
+
+    .food-description {
+        color: var(--text-light);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .order-btn {
+        background: var(--gradient-primary);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .order-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .order-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(78, 205, 196, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+            .order-btn:hover::before {
+                width: 300px;
+                height: 300px;
+            }
+
+        .order-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .order-btn:hover i {
+            transform: rotate(180deg);
+        }
+
+    .no-image-icon {
+        font-size: 3rem;
+        color: var(--text-light);
+        opacity: 0.5;
+    }
+
+
+    .menu-title {
+        font-size: 2rem;
+    }
+
+    .sidebar {
+        padding: 1rem;
+        border-right: none;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .food-grid {
+        padding: 1rem;
+    }
+
+    }
+
+    .loading-shimmer {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+    }
+
+</style>
+
+<div class="container-fluid mt-5 pt-5">
+    <div class="menu-container">
+        <!-- Header -->
+        <div class="menu-header">
+            <h1 class="menu-title">🍽️ Thực Đơn Đặc Biệt</h1>
+            <p class="menu-subtitle">Khám phá hương vị tuyệt vời từ nhà bếp của chúng tôi</p>
+        </div>
+
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <ul class="category-list">
+                        <li class="category-item">
+                            <a href="/home/menu" class="category-link @(Model.SelectedCategoryId == null ? "active" : "")">
+                                🍽️ Tất cả món ăn
+                            </a>
+                        </li>
+                        @foreach (var cat in Model.Categories)
+                        {
+                            <li class="category-item">
+                                <a href="/home/menu?categoryId=@cat.Id" class="category-link @(Model.SelectedCategoryId == cat.Id ? "active" : "")">
+                                    🏷️ @cat.CategoryName
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Food Grid -->
+            <div class="col-lg-9">
+                <div class="food-grid">
+                    <div class="row g-4">
+                        @foreach (var item in Model.Foods)
+                        {
+                            <div class="col-md-6 col-xl-4">
+                                <div class="food-card">
+                                    <div class="food-image">
+                                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl" alt="@item.FoodName" loading="lazy" />
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-utensils no-image-icon"></i>
+                                        }
+                                        <div class="price-badge">
+                                            @string.Format("{0:#,##0}đ", item.Price)
+                                        </div>
+                                    </div>
+                                    <div class="food-content">
+                                        <h5 class="food-name">@item.FoodName</h5>
+                                        <p class="food-description">
+                                            @(string.IsNullOrEmpty(item.Describe) ? "Món ăn ngon tuyệt vời đang chờ bạn khám phá!" : item.Describe)
+                                        </p>
+                                        <a href="javascript:void(0);" onclick="addToCart(@item.Id)" class="order-btn">
+                                            <i class="fas fa-plus"></i>
+                                            <span>Thêm vào giỏ</span>
+                                        </a>
+                                        <a href="/food/fooddetail/@item.Id" class="order-btn">
+                                            <i class="fas fa-info-circle"></i> Xem chi tiết
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Smooth scrolling and enhanced interactions
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add loading animation for images
+        const images = document.querySelectorAll('.food-image img');
+        images.forEach(img => {
+            img.addEventListener('load', function() {
+                this.style.opacity = '1';
+            });
+            img.addEventListener('error', function() {
+                this.parentElement.innerHTML = '<i class="fas fa-utensils no-image-icon"></i>';
+            });
+        });
+
+        // Add click animation for order buttons
+        const orderBtns = document.querySelectorAll('.order-btn');
+        orderBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.height, rect.width);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.classList.add('ripple');
+
+                this.appendChild(ripple);
+
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.food-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    });
+    //Add to Cart
+    function addToCart(foodId) {
+        fetch('/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `foodId=${foodId}&quantity=1`
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                alert("Đã thêm món vào giỏ!");
+            }
+        });
+    }
+</script>
+
+<style>
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.4);
+        transform: scale(0);
+        animation: ripple-effect 0.6s linear;
+        pointer-events: none;
+    }
+</style>

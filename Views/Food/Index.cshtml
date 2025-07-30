@@ -1,0 +1,144 @@
+﻿@model List<FoodViewModel>
+@{
+    ViewData["Title"] = "Quản lý món ăn";
+    Layout = "_AdminLayout";
+}
+<link rel="stylesheet" href="~/css/foodIndex.css" asp-append-version="true" />
+
+<div class="page-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">🍽️ Quản lý Món ăn</h1>
+        <p class="page-subtitle">Quản lý danh sách món ăn của nhà hàng một cách hiệu quả</p>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="action-bar">
+        <a class="btn-modern btn-primary-modern" href="/Food/Create">
+            ➕ Thêm món mới
+        </a>
+        <a class="btn-modern btn-success-modern" href="/Food/Export">
+            📊 Xuất Excel
+        </a>
+    </div>
+
+    <!-- Food Table -->
+    <div class="table-container">
+        <table class="table-modern">
+            <thead>
+                <tr>
+                    <th>🍜 Tên món</th>
+                    <th>📂 Danh mục</th>
+                    <th>📝 Mô tả</th>
+                    <th>🖼️ Ảnh</th>
+                    <th>💰 Giá</th>
+                    <th>📊 Trạng thái</th>
+                    <th>⚡ Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var food in Model)
+                {
+                    <tr>
+                        <td><strong>@food.FoodName</strong></td>
+                        <td>@food.CategoryName</td>
+                        <td>@food.Describe</td>
+                        <td>
+                            <img src="@food.ImageUrl" class="food-image" alt="@food.FoodName" />
+                        </td>
+                        <td>
+                            <span class="price-tag">@food.Price.ToString("N0") ₫</span>
+                        </td>
+                        <td>
+                            <span class="status-badge @(food.IsActive ? "status-active" : "status-inactive")">
+                                @(food.IsActive ? "🟢" : "🔴")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a class="btn-sm-modern btn-warning-modern" href="/Food/Edit/@food.Id">
+                                    ✏️ Sửa
+                                </a>
+                                <a class="btn-sm-modern btn-danger-modern"
+                                   href="/Food/Delete/@food.Id"
+                                   onclick="return confirm('Bạn có chắc chắn muốn xóa món ăn này không?')">
+                                    🗑️ Xóa
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container">
+        <nav>
+            <ul class="pagination-modern">
+                @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item-modern @(i == (int)ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link-modern" href="?page=@i">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<script>
+    // Thêm hiệu ứng smooth cho các interactions
+    document.addEventListener('DOMContentLoaded', function() {
+        // Smooth scroll animation
+        const links = document.querySelectorAll('a[href^="?page="]');
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.href;
+
+                // Add loading effect
+                this.style.opacity = '0.7';
+                this.innerHTML = '⏳';
+
+                // Simulate navigation (trong thực tế sẽ navigate thật)
+                setTimeout(() => {
+                    window.location.href = url;
+                }, 300);
+            });
+        });
+
+        // Add hover effect for table rows
+        const tableRows = document.querySelectorAll('.table-modern tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.01)';
+            });
+
+            row.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+        // Enhanced delete confirmation
+        const deleteButtons = document.querySelectorAll('a[href*="/Food/Delete/"]');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const foodName = this.closest('tr').querySelector('td:first-child strong').textContent;
+
+                if (confirm(`🗑️ Xác nhận xóa món "${foodName}"?\n\nHành động này không thể hoàn tác!`)) {
+                    // Add loading effect
+                    this.innerHTML = '⏳ Đang xóa...';
+                    this.style.opacity = '0.7';
+
+                    // Navigate to delete URL
+                    setTimeout(() => {
+                        window.location.href = this.href;
+                    }, 500);
+                }
+            });
+        });
+    });
+</script>

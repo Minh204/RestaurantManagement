@@ -1,0 +1,174 @@
+﻿<link rel="stylesheet" href="~/css/search.css" asp-append-version="true" />
+@model List<FoodSearchViewModel>
+@{
+    ViewData["Title"] = "Kết quả tìm kiếm";
+    var keyword = ViewBag.Keyword as string ?? "";
+    var sortOrder = ViewBag.SortOrder as string ?? "asc";
+	Layout = "_NoChangeColorLayout"; 
+}
+
+<!-- Search Header -->
+<div class="search-header pt-4 mt-4">
+    <div class="container">
+        <h1 class="search-title">
+            <i class="fas fa-search me-3"></i>Kết quả tìm kiếm
+        </h1>
+        @if (!string.IsNullOrEmpty(keyword))
+        {
+            <div class="d-flex justify-content-center">
+                <div class="keyword-highlight">
+                    <i class="fas fa-quote-left me-2"></i>@keyword<i class="fas fa-quote-right ms-2"></i>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="container">
+    <!-- Filter Section -->
+    <div class="filter-section fade-in">
+        <form method="get" class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <input type="hidden" name="keyword" value="@keyword" />
+            <div class="d-flex align-items-center gap-3">
+                <label class="filter-label me-2">
+                    <i class="fas fa-sort-amount-down me-2"></i>Sắp xếp theo giá:
+                </label>
+                <select name="sortOrder" onchange="this.form.submit()" class="custom-select" asp-for="@sortOrder">
+                    <option value="asc">💰 Giá tăng dần</option>
+                    <option value="desc">💎 Giá giảm dần</option>
+                </select>
+            </div>
+            <div class="text-white">
+                <i class="fas fa-utensils me-2"></i>
+                <span class="fw-bold">@Model.Count() món ăn</span>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Section -->
+    <div class="row g-4">
+        @if (!Model.Any())
+        {
+            <div class="col-12">
+                <div class="no-results fade-in">
+                    <i class="fas fa-search-minus"></i>
+                    <h3>Không tìm thấy món ăn phù hợp</h3>
+                    <p>
+                        Hãy thử tìm kiếm với từ khóa khác hoặc xem menu đầy đủ của chúng tôi.<br>
+                        Chúng tôi có hàng trăm món ăn ngon đang chờ bạn khám phá!
+                    </p>
+                    <a href="/Food" class="order-btn d-inline-block mt-3" style="width: auto; padding: 1rem 2rem;">
+                        <i class="fas fa-arrow-left me-2"></i>Xem tất cả món ăn
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            @for (int i = 0; i < Model.Count(); i++)
+            {
+                var item = Model.ElementAt(i);
+                <div class="col-lg-4 col-md-6 mb-4" style="animation-delay: @(i * 0.1)s;">
+                    <div class="card food-card fade-in">
+                        <a href="/Food/FoodDetail/@item.Id" class="text-decoration-none">
+                            <img src="@item.Image" class="card-img-top" alt="@item.FoodName" loading="lazy" />
+                        </a>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">🍜 @item.FoodName</h5>
+                            <p class="card-text flex-grow-1">@item.Description</p>
+                            <div class="price-tag">
+                                <i class="fas fa-tag me-2"></i>@item.Price.ToString("N0") VNĐ
+                            </div>
+                            <form method="post" action="/Cart/Add" class="mt-auto">
+                                <input type="hidden" name="foodId" value="@item.Id" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <button type="submit" class="order-btn">
+                                    <i class="fas fa-cart-plus me-2"></i>Đặt món ngay
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="text-center mt-5 fade-in">
+            <div class="d-inline-block p-4 rounded-3" style="background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);">
+                <p style="color: #808080" class=" mb-2">
+                    <i class="fas fa-heart text-danger me-2"></i>
+                    Cảm ơn bạn đã tin tưởng lựa chọn chúng tôi!
+                </p>
+                <small style="color: #808080">
+                    <i class="fas fa-shipping-fast me-2"></i>
+                    Giao hàng nhanh chóng trong 30 phút
+                </small>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        // Add smooth loading effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loading shimmer effect while images load
+            const images = document.querySelectorAll('.card-img-top');
+            images.forEach(img => {
+                img.addEventListener('load', function() {
+                    this.style.opacity = '1';
+                });
+
+                // Add error handling for broken images
+                img.addEventListener('error', function() {
+                    this.src = '/images/food-placeholder.jpg';
+                    this.alt = 'Hình ảnh không khả dụng';
+                });
+            });
+
+            // Add intersection observer for animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.food-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'all 0.6s ease-out';
+                observer.observe(card);
+            });
+
+            // Add success feedback for form submissions
+            document.querySelectorAll('.order-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang thêm...';
+                    this.disabled = true;
+
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-check me-2"></i>Đã thêm!';
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.disabled = false;
+                        }, 1000);
+                    }, 500);
+                });
+            });
+        });
+    </script>
+}

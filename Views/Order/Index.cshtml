@@ -1,0 +1,119 @@
+﻿@model List<OrderViewModel>
+@{
+    ViewData["Title"] = "Lịch sử đơn hàng";
+}
+<link rel="stylesheet" href="~/css/order.css" asp-append-version="true" />
+
+<div class="order-history-container pt-5 mt-5">
+    <div class="main-content">
+        <div class="page-header animate-fade-in">
+            <h1 class="page-title">Lịch sử đơn hàng</h1>
+            <p class="page-subtitle">Theo dõi tất cả đơn hàng của bạn tại đây</p>
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="empty-state animate-fade-in">
+                <div class="empty-state-icon">🛍️</div>
+                <h3>Chưa có đơn hàng nào</h3>
+                <p>Bạn chưa thực hiện đơn hàng nào. Hãy khám phá menu và đặt món yêu thích của bạn!</p>
+                <a href="/Cart/Index" class="checkout-btn">Bắt đầu đặt hàng</a>
+            </div>
+        }
+        else
+        {
+            <div class="text-center mb-4">
+                <a href="/Cart/Index" class="checkout-btn animate-fade-in">Đặt hàng mới</a>
+            </div>
+
+            @foreach (var order in Model)
+            {
+                <div class="order-card animate-fade-in">
+                    <div class="order-header">
+                        <div class="order-info">
+                            <div class="info-item">
+                                <svg class="info-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                                <span class="info-label">Địa chỉ:</span>
+                                <span class="info-value">@order.Address</span>
+                            </div>
+                            <div class="info-item">
+                                <svg class="info-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                                </svg>
+                                <span class="info-label">Thời gian:</span>
+                                <span class="info-value">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(order.Note))
+                            {
+                                <div class="info-item">
+                                    <svg class="info-icon" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="info-label">Ghi chú:</span>
+                                    <span class="info-value">@order.Note</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="order-body">
+                        <div class="food-grid">
+                            @foreach (var food in order.Foods)
+                            {
+                                <div class="food-item">
+                                    <img src="@food.ImageUrl" alt="@food.FoodName" class="food-image" />
+                                    <div class="food-details">
+                                        <h6>@food.FoodName</h6>
+                                        <div class="food-quantity">Số lượng: @food.Quantity</div>
+                                        <div class="food-price">@food.TotalAmount.ToString("N0") đ</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="order-footer">
+                        <div class="total-section">
+                            <div class="total-label">Tổng tiền đơn hàng</div>
+                            <div class="total-amount">@order.TotalAmount.ToString("N0") VNĐ</div>
+                            <span class="status-badge status-@order.Status.ToLower()">@order.Status</span>
+                        </div>
+
+                        @if (order.Status == "Pending")
+                        {
+                            <form method="post" action="/order/cancel/@order.Id" style="margin: 0;">
+                                <button type="submit" class="cancel-btn" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
+                                    Hủy đơn hàng
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<script>
+    // Add smooth animations when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.order-card');
+        cards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            }, 100);
+        });
+
+        // Add confirmation for cancel buttons
+        const cancelButtons = document.querySelectorAll('.cancel-btn');
+        cancelButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script>

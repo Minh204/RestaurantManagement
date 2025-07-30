@@ -1,0 +1,58 @@
+﻿@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(180deg);
+    }
+}
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .cart-container {
+        padding: 1rem;
+    }
+
+    .cart-title {
+        font-size: 2rem;
+    }
+
+    .checkout-buttons {
+        justify-content: center;
+    }
+
+    .checkout-btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .cart-table {
+        font-size: 0.9rem;
+    }
+
+    .food-image {
+        width: 60px;
+        height: 60px;
+    }
+}

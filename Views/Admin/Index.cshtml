@@ -1,0 +1,258 @@
+﻿@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Thống kê doanh thu";
+    Layout = "_AdminLayout";
+}
+<link rel="stylesheet" href="~/css/indexAdmin.css" asp-append-version="true" />
+
+<div class="dashboard-container">
+    <div class="floating-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="dashboard-content">
+        <div class="page-header fade-in">
+            <h1><i class="fas fa-chart-line"></i> Thống Kê Doanh Thu</h1>
+            <p>Theo dõi hiệu suất kinh doanh của bạn</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 fade-in">
+                <div class="stats-card revenue">
+                    <div class="stats-card-body">
+                        <div class="stats-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <h5 class="stats-title">Tổng Doanh Thu</h5>
+                        <p class="stats-value">@Model.TotalRevenue.ToString("N0") đ</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 fade-in">
+                <div class="stats-card orders">
+                    <div class="stats-card-body">
+                        <div class="stats-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h5 class="stats-title">Số Đơn Hàng</h5>
+                        <p class="stats-value">@Model.OrderCount đơn</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-card fade-in">
+            <div class="chart-header">
+                <h5 class="chart-title">
+                    <i class="fas fa-chart-area"></i>
+                    Biểu Đồ Doanh Thu Theo Ngày
+                </h5>
+            </div>
+            <div class="chart-body">
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="bestselling-card fade-in">
+            <div class="chart-header">
+                <h5 class="chart-title">
+                    <i class="fas fa-trophy"></i>
+                    Top 5 Món Bán Chạy
+                </h5>
+            </div>
+            <div class="chart-body">
+                @foreach (var item in Model.BestSellingFoods)
+                {
+                    <div class="bestselling-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="food-name">@item.FoodName</p>
+                            <span class="quantity-badge">@item.Quantity</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="export-section">
+            <a href="/Admin/ExportExcel" class="export-btn">
+                <i class="fas fa-file-excel"></i>
+                Xuất Excel
+            </a>
+        </div>
+    </div>
+</div>
+
+@* Debug information - remove this in production *@
+<div style="display:none;">
+    <pre>
+    @foreach (var item in Model.DailyRevenue)
+    {
+                    @($"{item.Date:yyyy-MM-dd} : {item.Revenue} \n")
+    }
+    </pre>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if we have data
+            @if (Model.DailyRevenue != null && Model.DailyRevenue.Any())
+            {
+                            <text>
+                            var ctx = document.getElementById('revenueChart').getContext('2d');
+                            if (ctx) {
+                                var chart = new Chart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: [@Html.Raw(string.Join(",", Model.DailyRevenue.Select(x => $"'{x.Date:MM/dd}'")))],
+                                        datasets: [{
+                                            label: 'Doanh thu (đ)',
+                                            data: [@Html.Raw(string.Join(",", Model.DailyRevenue.Select(x => x.Revenue.ToString("0", System.Globalization.CultureInfo.InvariantCulture))))],
+                                            borderColor: '#667eea',
+                                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                            borderWidth: 3,
+                                            tension: 0.4,
+                                            fill: true,
+                                            pointBackgroundColor: '#667eea',
+                                            pointBorderColor: '#fff',
+                                            pointBorderWidth: 3,
+                                            pointRadius: 6,
+                                            pointHoverRadius: 8,
+                                            pointHoverBorderWidth: 4
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                display: true,
+                                                position: 'top',
+                                                labels: {
+                                                    font: {
+                                                        size: 14,
+                                                        weight: 'bold'
+                                                    },
+                                                    color: '#2d3748',
+                                                    usePointStyle: true,
+                                                    padding: 20
+                                                }
+                                            },
+                                            tooltip: {
+                                                backgroundColor: 'rgba(45, 55, 72, 0.95)',
+                                                titleColor: '#fff',
+                                                bodyColor: '#fff',
+                                                borderColor: '#667eea',
+                                                borderWidth: 1,
+                                                cornerRadius: 10,
+                                                displayColors: false,
+                                                callbacks: {
+                                                    label: function(context) {
+                                                        return context.dataset.label + ': ' +
+                                                               new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' đ';
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        scales: {
+                                            x: {
+                                                display: true,
+                                                grid: {
+                                                    color: 'rgba(0, 0, 0, 0.05)',
+                                                    borderColor: 'rgba(0, 0, 0, 0.1)'
+                                                },
+                                                title: {
+                                                    display: true,
+                                                    text: 'Ngày',
+                                                    font: {
+                                                        size: 14,
+                                                        weight: 'bold'
+                                                    },
+                                                    color: '#2d3748'
+                                                },
+                                                ticks: {
+                                                    color: '#4a5568',
+                                                    font: {
+                                                        weight: 'bold'
+                                                    }
+                                                }
+                                            },
+                                            y: {
+                                                display: true,
+                                                beginAtZero: true,
+                                                grid: {
+                                                    color: 'rgba(0, 0, 0, 0.05)',
+                                                    borderColor: 'rgba(0, 0, 0, 0.1)'
+                                                },
+                                                title: {
+                                                    display: true,
+                                                    text: 'Doanh thu (đ)',
+                                                    font: {
+                                                        size: 14,
+                                                        weight: 'bold'
+                                                    },
+                                                    color: '#2d3748'
+                                                },
+                                                ticks: {
+                                                    color: '#4a5568',
+                                                    font: {
+                                                        weight: 'bold'
+                                                    },
+                                                    callback: function(value) {
+                                                        return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        interaction: {
+                                            intersect: false,
+                                            mode: 'index'
+                                        },
+                                        onResize: function(chart, size) {
+                                            // Optional: log để debug
+                                            // console.log('Chart resized to:', size);
+                                        }
+                                    }
+                                });
+
+                                // Đảm bảo chart render đúng sau khi tạo
+                                setTimeout(function() {
+                                    chart.resize();
+                                }, 100);
+
+                            } else {
+                                console.error('Canvas element not found');
+                            }
+                            </text>
+            }
+            else
+            {
+                            <text>
+                            console.log('No revenue data available');
+                            var chartElement = document.getElementById('revenueChart');
+                            if (chartElement) {
+                                chartElement.parentElement.innerHTML = '<div class="text-center text-muted p-4"><i class="fas fa-chart-line fa-3x mb-3"></i><br>Không có dữ liệu để hiển thị</div>';
+                            }
+                            </text>
+            }
+        });
+
+        // Xử lý resize window
+        window.addEventListener('resize', function() {
+            clearTimeout(window.resizeTimeout);
+            window.resizeTimeout = setTimeout(function() {
+                if (window.revenueChart) {
+                    window.revenueChart.resize();
+                }
+            }, 250);
+        });
+    </script>
+}

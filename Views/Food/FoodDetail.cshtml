@@ -1,0 +1,137 @@
+﻿@model FoodDetailViewModel
+@{
+    ViewData["Title"] = "Chi tiết món ăn";
+}
+<link rel="stylesheet" href="~/css/foodDetail.css" asp-append-version="true" />
+
+<div class="container-fluid mt-5 pt-5">
+    <div class="food-detail-container">
+        <div class="row g-0">
+            <div class="col-lg-6">
+                <div class="food-image-section">
+                    <img src="@Model.ImageUrl" class="food-image" alt="@Model.FoodName" />
+                    <div class="image-overlay"></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="food-info-section">
+                    <div class="floating-elements">
+                        <div class="floating-badge">
+                            <i class="fas fa-star"></i> Món đặc biệt
+                        </div>
+                    </div>
+
+                    <h1 class="food-title">@Model.FoodName</h1>
+
+                    <div class="food-price">
+                        <span class="price-tag">@Model.Price.ToString("N0") đ</span>
+                    </div>
+
+                    <hr class="divider" />
+
+                    <div class="food-details">
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-info-circle" style="color: var(--primary-orange);"></i>
+                                Mô tả
+                            </div>
+                            <div class="detail-content">@Model.Detail</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-list-ul" style="color: var(--primary-orange);"></i>
+                                Thành phần
+                            </div>
+                            <div class="detail-content">@Model.Ingredient</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-users" style="color: var(--primary-orange);"></i>
+                                Khẩu phần
+                            </div>
+                            <div class="detail-content">@Model.Ration</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                <i class="fas fa-clock" style="color: var(--primary-orange);"></i>
+                                Thời gian nấu
+                            </div>
+                            <div class="detail-content">@Model.CookTime</div>
+                        </div>
+                    </div>
+
+                    <a href="javascript:void(0);" onclick="addToCart(@Model.Id)" class="add-to-cart-btn">
+                        <i class="fas fa-cart-plus btn-icon"></i>
+                        <span>Thêm vào giỏ hàng</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="success-message" id="successMessage">
+    <i class="fas fa-check-circle"></i> Đã thêm món vào giỏ hàng!
+</div>
+
+<script>
+    function addToCart(foodId) {
+        // Add loading state
+        const btn = document.querySelector('.add-to-cart-btn');
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Đang thêm...</span>';
+        btn.style.pointerEvents = 'none';
+
+        fetch('/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `foodId=${foodId}&quantity=1`
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                // Show success message
+                const successMsg = document.getElementById('successMessage');
+                successMsg.style.display = 'block';
+
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 2000);
+
+                // Restore button
+                btn.innerHTML = originalContent;
+                btn.style.pointerEvents = 'auto';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra. Vui lòng thử lại!');
+
+            // Restore button
+            btn.innerHTML = originalContent;
+            btn.style.pointerEvents = 'auto';
+        });
+    }
+
+    // Add smooth scroll and fade-in effects
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate elements on load
+        const detailItems = document.querySelectorAll('.detail-item');
+        detailItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                item.style.transition = 'all 0.6s ease';
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, 200 * index);
+        });
+    });
+</script>

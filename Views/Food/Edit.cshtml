@@ -1,0 +1,59 @@
+﻿@model FoodViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa món ăn";
+    var categories = ViewBag.Categories as List<Category>;
+	Layout = "_AdminLayout";
+}
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="FoodName" class="form-label">Tên món</label>
+        <input asp-for="FoodName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label">Danh mục</label>
+        <select asp-for="CategoryId" class="form-select">
+            @foreach (var cat in categories)
+            {
+                <option value="@cat.Id" selected="@(cat.Id == Model.CategoryId)">
+                    @cat.CategoryName
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Describe" class="form-label">Mô tả</label>
+        <textarea asp-for="Describe" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="imageFile" class="form-label">Hình ảnh mới (nếu muốn thay)</label>
+        <input type="file" name="imageFile" class="form-control" accept="image/*" />
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <div class="mt-2">
+                <img src="@Model.ImageUrl" width="120" class="rounded shadow" />
+            </div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label">Giá tiền</label>
+        <input asp-for="Price" class="form-control" type="number" min="0" step="1000" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IsActive" class="form-label">Trạng thái</label>
+        <select asp-for="IsActive" class="form-select">
+            <option value="true" selected="@Model.IsActive">Đang bán</option>
+            <option value="false" selected="!@Model.IsActive">Ngừng bán</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>
+

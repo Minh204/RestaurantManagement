@@ -1,0 +1,521 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-color: #f093fb;
+            --accent-color: #4facfe;
+            --dark-bg: #1a1d29;
+            --darker-bg: #151821;
+            --sidebar-width: 280px;
+            --header-height: 80px;
+            --border-radius: 16px;
+            --shadow-light: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 40px rgba(0, 0, 0, 0.12);
+            --shadow-heavy: 0 16px 60px rgba(0, 0, 0, 0.15);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+            /* Animated background particles */
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="g" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="25" cy="25" r="2" fill="url(%23g)"><animate attributeName="cy" values="25;75;25" dur="3s" repeatCount="indefinite"/></circle><circle cx="75" cy="75" r="1.5" fill="url(%23g)"><animate attributeName="cy" values="75;25;75" dur="4s" repeatCount="indefinite"/></circle><circle cx="50" cy="50" r="1" fill="url(%23g)"><animate attributeName="cx" values="50;25;50" dur="5s" repeatCount="indefinite"/></circle></svg>') repeat;
+                pointer-events: none;
+                z-index: -1;
+                opacity: 0.3;
+            }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: rgba(21, 24, 33, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+
+            .sidebar::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .sidebar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .sidebar::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 2px;
+            }
+
+            .sidebar .logo {
+                padding: 30px 24px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                margin-bottom: 20px;
+                position: relative;
+            }
+
+                .sidebar .logo h3 {
+                    color: white;
+                    font-size: 24px;
+                    font-weight: 700;
+                    margin: 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                }
+
+                .sidebar .logo i {
+                    font-size: 28px;
+                    background: var(--primary-gradient);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+
+                .sidebar .logo::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 24px;
+                    right: 24px;
+                    height: 2px;
+                    background: var(--primary-gradient);
+                    border-radius: 1px;
+                }
+
+        /* Navigation */
+        .nav-section {
+            padding: 0 16px;
+            margin-bottom: 32px;
+        }
+
+        .nav-section-title {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 16px 12px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 4px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .sidebar a::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: var(--primary-gradient);
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: -1;
+            }
+
+            .sidebar a:hover::before,
+            .sidebar a.active::before {
+                left: 0;
+            }
+
+            .sidebar a:hover,
+            .sidebar a.active {
+                color: white;
+                transform: translateX(8px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            }
+
+            .sidebar a i {
+                font-size: 18px;
+                width: 20px;
+                text-align: center;
+            }
+
+        /* Main content area */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top header */
+        .top-header {
+            height: var(--header-height);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.8);
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+            .header-btn:hover {
+                background: white;
+                box-shadow: var(--shadow-light);
+                transform: translateY(-2px);
+            }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .user-avatar:hover {
+                transform: scale(1.05);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            padding: 32px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Content cards */
+        .content-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            padding: 32px;
+            box-shadow: var(--shadow-light);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+
+            .content-card:hover {
+                box-shadow: var(--shadow-medium);
+                transform: translateY(-4px);
+            }
+
+        /* Stats cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow-light);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .stat-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: var(--primary-gradient);
+            }
+
+            .stat-card:hover {
+                transform: translateY(-8px);
+                box-shadow: var(--shadow-heavy);
+            }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+
+        .content-card,
+        .stat-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+            .stat-card:nth-child(2) {
+                animation-delay: 0.1s;
+            }
+
+            .stat-card:nth-child(3) {
+                animation-delay: 0.2s;
+            }
+
+            .stat-card:nth-child(4) {
+                animation-delay: 0.3s;
+            }
+
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.5);
+            }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <h3><i class="bi bi-shop-window"></i> Admin Panel</h3>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Dashboard</div>
+            <a href="/Home/Index" class="active">
+                <i class="bi bi-house-door"></i>
+                <span>Trang chủ</span>
+            </a>
+        </div>
+        @if (User.Identity.IsAuthenticated && User.IsInRole("Staff"))
+        {
+            <div class="nav-section">
+                <div class="nav-section-title">Quản lý</div>
+                <a href="/Table/Index">
+                    <i class="bi bi-table"></i>
+                    <span>Bàn ăn</span>
+                </a>
+            </div>
+        }
+        @if(User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+        {
+            <div class="nav-section">
+                <div class="nav-section-title">Quản lý</div>
+                <a href="/Admin/ManageAccount">
+                    <i class="bi bi-person-lines-fill"></i>
+                    <span>Tài khoản</span>
+                </a>
+                <a href="/Table/Index">
+                    <i class="bi bi-table"></i>
+                    <span>Bàn ăn</span>
+                </a>
+                <a href="/Category/Index">
+                    <i class="bi bi-tags"></i>
+                    <span>Danh mục</span>
+                </a>
+                <a href="/Food/Index">
+                    <i class="bi bi-egg-fried"></i>
+                    <span>Món ăn</span>
+                </a>
+            </div>
+        }
+
+        <div class="nav-section">
+            <div class="nav-section-title">Đơn hàng</div>
+            <a href="/BookingAdmin/BookingList">
+                <i class="bi bi-calendar-check"></i>
+                <span>Đặt bàn</span>
+            </a>
+            <a href="/AdminOrder/Index">
+                <i class="bi bi-receipt-cutoff"></i>
+                <span>Đơn hàng</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main wrapper -->
+    <div class="main-wrapper">
+        <!-- Top header -->
+        <div class="top-header">
+            <div class="header-left">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+            <div class="header-right">
+                <button class="header-btn mobile-toggle" onclick="toggleMobileSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <button class="header-btn">
+                    <i class="bi bi-bell"></i>
+                </button>
+                <button class="header-btn">
+                    <i class="bi bi-gear"></i>
+                </button>
+                <div class="user-avatar">
+                    @if(User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <a style="text-decoration: none; color: white" href="/Admin/Index">AD</a>
+                    }
+                    else if(User.Identity.IsAuthenticated && User.IsInRole("Staff"))
+                    {
+                        <a style="text-decoration: none; color: white" href="/Staff/Index">ST</a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="main-content">
+
+            <!-- Content area -->
+            <div class="content-card">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mobile sidebar toggle
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('mobile-open');
+        }
+
+        // Close mobile sidebar when clicking outside
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.querySelector('.mobile-toggle');
+
+            if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+                sidebar.classList.remove('mobile-open');
+            }
+        });
+
+        // Smooth scroll and active link management
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('.sidebar a');
+            const currentPath = window.location.pathname;
+
+            links.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Header animation on scroll
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.top-header');
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > lastScrollTop) {
+                header.style.transform = 'translateY(-100%)';
+            } else {
+                header.style.transform = 'translateY(0)';
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

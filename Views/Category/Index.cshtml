@@ -1,0 +1,337 @@
+﻿@model List<Category>
+@{
+    ViewData["Title"] = "Quản lý danh mục";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .category-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin: -1rem -15px 2rem -15px;
+        border-radius: 0 0 20px 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .category-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: none;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+    .table-container {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .custom-table {
+        margin: 0;
+        border: none;
+    }
+
+        .custom-table thead th {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+        }
+
+        .custom-table tbody tr {
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+            .custom-table tbody tr:hover {
+                background: linear-gradient(135deg, #f8f9ff 0%, #e8f4ff 100%);
+                transform: scale(1.01);
+            }
+
+        .custom-table tbody td {
+            padding: 1.2rem;
+            border: none;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+    .category-name {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.1rem;
+    }
+
+    .category-description {
+        color: #6c757d;
+        font-style: italic;
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .btn-modern {
+        border-radius: 25px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        border: none;
+        margin: 0 0.2rem;
+    }
+
+    .btn-add {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+    }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
+            color: white;
+        }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+            color: white;
+        }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .page-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-top: 0.5rem;
+    }
+
+    .stats-card {
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .stats-number {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+</style>
+
+<div class="category-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="page-title">
+                    <i class="fas fa-tags me-3"></i>
+                    Quản lý danh mục
+                </h1>
+                <p class="page-subtitle">Quản lý và tổ chức các danh mục sản phẩm</p>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div class="stats-number">@Model.Count</div>
+                    <div>Tổng danh mục</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <a href="/Category/Create" class="btn btn-add btn-modern">
+                        <i class="fas fa-plus me-2"></i>
+                        Thêm danh mục mới
+                    </a>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="input-group" style="width: 300px;">
+                        <span class="input-group-text bg-light border-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-0 bg-light" placeholder="Tìm kiếm danh mục..." id="searchInput">
+                    </div>
+                </div>
+            </div>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-container fade-in">
+                    <table class="table custom-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 35%;">
+                                    <i class="fas fa-tag me-2"></i>
+                                    Tên danh mục
+                                </th>
+                                <th style="width: 45%;">
+                                    <i class="fas fa-align-left me-2"></i>
+                                    Mô tả
+                                </th>
+                                <th style="width: 20%;" class="text-center">
+                                    <i class="fas fa-cogs me-2"></i>
+                                    Hành động
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="category-name">@item.CategoryName</div>
+                                    </td>
+                                    <td>
+                                        <div class="category-description" title="@item.Describe">
+                                            @(string.IsNullOrEmpty(item.Describe) ? "Chưa có mô tả" : item.Describe)
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a class="btn btn-edit btn-modern" href="/Category/Edit/@item.Id" title="Chỉnh sửa">
+                                                <i class="fas fa-edit">Sửa</i>
+                                            </a>
+                                            <a class="btn btn-delete btn-modern" href="/Category/Delete/@item.Id"
+                                               onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?')" title="Xóa">
+                                                <i class="fas fa-trash">Xóa</i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="category-card fade-in">
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h4>Chưa có danh mục nào</h4>
+                        <p>Hãy tạo danh mục đầu tiên để bắt đầu quản lý sản phẩm của bạn.</p>
+                        <a href="/Category/Create" class="btn btn-add btn-modern mt-3">
+                            <i class="fas fa-plus me-2"></i>
+                            Tạo danh mục đầu tiên
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const tableRows = document.querySelectorAll('.custom-table tbody tr');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+
+            tableRows.forEach(row => {
+                const categoryName = row.querySelector('.category-name').textContent.toLowerCase();
+                const categoryDesc = row.querySelector('.category-description').textContent.toLowerCase();
+
+                if (categoryName.includes(searchTerm) || categoryDesc.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Add hover effects to action buttons
+        document.querySelectorAll('.btn-modern').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px) scale(1.05)';
+            });
+
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Smooth animations for table rows
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        tableRows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(20px)';
+            row.style.transition = `all 0.6s ease ${index * 0.1}s`;
+            observer.observe(row);
+        });
+    });
+</script>

@@ -1,0 +1,44 @@
+﻿@model FoodViewModel
+@{
+    ViewData["Title"] = "Thêm món ăn";
+	Layout = "_AdminLayout";
+    var categories = ViewBag.Categories as List<Category>;
+}
+
+<h2 class="mb-4">Thêm món ăn</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label asp-for="FoodName" class="form-label">Tên món</label>
+        <input asp-for="FoodName" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label">Danh mục</label>
+        <select asp-for="CategoryId" class="form-select">
+            <option value="">-- Chọn danh mục --</option>
+            @foreach (var cat in categories)
+            {
+                <option value="@cat.Id">@cat.CategoryName</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Describe" class="form-label">Mô tả</label>
+        <textarea asp-for="Describe" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="imageFile" class="form-label">Hình ảnh</label>
+        <input type="file" name="imageFile" class="form-control" accept="image/*" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label">Giá tiền</label>
+        <input asp-for="Price" class="form-control" type="number" min="0" step="1000" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Thêm món</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>

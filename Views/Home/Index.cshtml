@@ -1,0 +1,819 @@
+﻿@model List<RestaurantManagement.Models.FoodViewModel>
+@{
+    ViewData["Title"] = "Trang Chủ";
+}
+<link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+<style>
+    body{
+        font-family: 'Inter', sans-serif;
+    }
+    /* Menu item hover effects */
+    .menu-item-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+    }
+
+    /* Testimonial hover effects */
+    .testimonial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+    }
+
+    .hero-section {
+        position: relative;
+        height: 100vh;
+        background: linear-gradient(135deg, rgba(139, 69, 19, 0.8) 0%, rgba(160, 82, 45, 0.6) 50%, rgba(0, 0, 0, 0.4) 100%), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.3) 100%);
+            z-index: 1;
+        }
+    .stats-section {
+        background: linear-gradient(135deg, #EEB462 0%, #CD7672 100%);
+	}
+    .floating-elements {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .floating-element {
+        position: absolute;
+        opacity: 0.1;
+        animation: float 20s infinite linear;
+        color: #d4af37;
+    }
+
+        .floating-element:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+            font-size: 2rem;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            animation-delay: -5s;
+            font-size: 1.5rem;
+        }
+
+        .floating-element:nth-child(3) {
+            top: 80%;
+            left: 20%;
+            animation-delay: -10s;
+            font-size: 1.8rem;
+        }
+
+        .floating-element:nth-child(4) {
+            top: 30%;
+            right: 30%;
+            animation-delay: -15s;
+            font-size: 1.3rem;
+        }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-content {
+        text-align: center;
+        color: white;
+        animation: fadeInUp 1.5s ease-out;
+    }
+
+
+    .hero-content h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(3rem, 8vw, 6rem);
+        font-weight: 700;
+        margin-bottom: 2rem;
+        text-shadow: 3px 3px 10px rgba(0,0,0,0.8);
+        letter-spacing: 4px;
+        position: relative;
+        display: inline-block;
+    }
+
+        .hero-content h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+   
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 3rem;
+        font-weight: 300;
+        color: #f8f9fa;
+        text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
+        animation: fadeInUp 1.5s ease-out 0.3s both;
+    }
+
+    .hero-description {
+        font-size: 1.1rem;
+        margin-bottom: 3rem;
+        font-weight: 400;
+        color: #e9ecef;
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.7;
+        animation: fadeInUp 1.5s ease-out 0.6s both;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: fadeInUp 1.5s ease-out 0.9s both;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 15px 35px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 50px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+    .btn-custom {
+        background: linear-gradient(135deg, #d4af37, #f4d03f);
+        color: #2c3e50;
+        border: none;
+        box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+    }
+
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4);
+            color: #2c3e50;
+        }
+
+    .btn-outline {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+    .btn i {
+        margin-right: 8px;
+        font-size: 1.2rem;
+    }
+
+   
+
+    /* Add smooth scrolling indicator */
+    .scroll-indicator {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255, 255, 255, 0.7);
+        animation: bounce 2s infinite;
+        z-index: 3;
+    }
+</style>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="floating-elements">
+            <div class="floating-element">🍜</div>
+            <div class="floating-element">🥢</div>
+            <div class="floating-element">🍲</div>
+            <div class="floating-element">🌿</div>
+        </div>
+
+        <div class="container">
+            <div class="hero-content">
+                <h1>DOLA RESTAURANT</h1>
+                <p class="hero-subtitle">Tinh Hoa Ẩm Thực Việt Nam</p>
+                <p class="hero-description">
+                    Chào mừng quý thực khách đến với Dola Restaurant – nơi tôn vinh tinh hoa ẩm thực truyền thống Việt Nam.
+                    Với sứ mệnh gìn giữ và lan tỏa hương vị quê hương, nhà hàng chúng tôi mang đến những món ăn dân dã,
+                    đậm đà bản sắc từ khắp ba miền. Hãy đến và cảm nhận hương vị Việt Nam đích thực trong từng món ăn
+                    tại nhà hàng chúng tôi!
+                </p>
+                <div class="hero-buttons">
+                    <a href="/reservation" class="btn btn-custom">
+                        <i class="fas fa-calendar-alt"></i>Đặt Bàn Ngay
+                    </a>
+                    <a href="/home/menu" class="btn btn-outline">
+                        <i class="fas fa-list"></i>Xem Thực Đơn
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down" style="font-size: 1.5rem;"></i>
+        </div>
+    </section>
+    <!--Banner-->
+    <div class="banner-container">
+        <div class="restaurant-info">
+            <h3>DOLA RESTAURANT</h3>
+            <p>Hương vị đích thực • Phục vụ 24/7</p>
+        </div>
+
+        <div class="banner-wrapper" id="bannerWrapper">
+            <div class="banner-slide slide-1">
+                <div class="slide-content">
+                    <h2>Chào Mừng Đến Nhà Hàng</h2>
+                    <p>Trải nghiệm ẩm thực đẳng cấp với không gian sang trọng và hương vị khó quên. Nơi mọi bữa ăn đều trở thành kỷ niệm đáng nhớ.</p>
+                    <a href="#" class="cta-button">Đặt Bàn Ngay</a>
+                </div>
+            </div>
+
+            <div class="banner-slide slide-2">
+                <div class="slide-content">
+                    <h2>Pizza Ý Chính Hiệu</h2>
+                    <p>Được làm từ bột mì nhập khẩu Italia, sốt cà chua tươi và phô mai Mozzarella cao cấp. Nướng trong lò gạch truyền thống với nhiệt độ hoàn hảo.</p>
+                    <a href="#" class="cta-button">Xem Menu</a>
+                </div>
+            </div>
+
+            <div class="banner-slide slide-3">
+                <div class="slide-content">
+                    <h2>Món Ăn Tây Âu</h2>
+                    <p>Thưởng thức các món ăn Âu Mỹ được chế biến bởi đầu bếp chuyên nghiệp với nguyên liệu tươi ngon nhất. Hương vị đậm đà, trình bày nghệ thuật.</p>
+                    <a href="#" class="cta-button">Gọi Món</a>
+                </div>
+            </div>
+
+            <div class="banner-slide slide-4">
+                <div class="slide-content">
+                    <h2>Bánh Ngọt & Tráng Miệng</h2>
+                    <p>Bộ sưu tập bánh ngọt và tráng miệng tinh tế, được làm thủ công mỗi ngày. Từ chocolate mousse đến tiramisu cổ điển, mỗi miếng đều là tác phẩm nghệ thuật.</p>
+                    <a href="#" class="cta-button">Thử Ngay</a>
+                </div>
+            </div>
+
+            <div class="banner-slide slide-5">
+                <div class="slide-content">
+                    <h2>Không Gian Ấm Cúng</h2>
+                    <p>Thiết kế nội thất sang trọng với ánh sáng ấm áp, tạo không gian lý tưởng cho các buổi hẹn hò, tiệc gia đình hay gặp gỡ đối tác kinh doanh.</p>
+                    <a href="#" class="cta-button">Tham Quan</a>
+                </div>
+            </div>
+        </div>
+
+        <button class="banner-nav prev" onclick="changeSlide(-1)">‹</button>
+        <button class="banner-nav next" onclick="changeSlide(1)">›</button>
+
+        <button class="play-pause" onclick="toggleAutoPlay()" id="playPauseBtn">⏸️</button>
+
+        <div class="banner-dots">
+            <span class="dot active" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+            <span class="dot" onclick="currentSlide(3)"></span>
+            <span class="dot" onclick="currentSlide(4)"></span>
+            <span class="dot" onclick="currentSlide(5)"></span>
+        </div>
+    </div>
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">10+</span>
+                        <span class="stat-label">Năm Kinh Nghiệm</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">50K+</span>
+                        <span class="stat-label">Khách Hàng Hài Lòng</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">200+</span>
+                        <span class="stat-label">Món Ăn Đặc Sắc</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">5★</span>
+                        <span class="stat-label">Đánh Giá Trung Bình</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Menu Preview Section -->
+    <section style="padding: 80px 0; background: white;">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-lg-8 mx-auto">
+                    <h2 style="font-weight: 700; font-size: 2.5rem; color: #333; margin-bottom: 20px;">
+                        Món Ăn Nổi Bật
+                    </h2>
+                    <p class="lead" style="color: #666; font-size: 1.1rem;">
+                        Những món ăn được yêu thích nhất tại Dola Restaurant
+                    </p>
+                </div>
+            </div>
+
+            <div class="container py-5">
+                <div class="row g-4">
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-lg-4 col-md-6" >
+                            <div class="menu-item-card shadow-sm rounded-4 overflow-hidden bg-white" style="transition: all 0.3s ease;">
+                                <div class="menu-image position-relative" style="height: 220px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" alt="@item.FoodName" style="width: 100%; height: 100%; object-fit: cover;" />
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-utensils text-muted" style="font-size: 4rem;"></i>
+                                    }
+
+                                    <span class="badge bg-white text-danger fw-semibold position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill shadow-sm">
+                                        @string.Format("{0:#,##0}đ", item.Price)
+                                    </span>
+                                </div>
+
+                                <div class="p-4">
+                                    <h5 class="fw-bold text-dark mb-2">@item.FoodName</h5>
+                                    <p style="color: #666; margin-bottom: 15px; line-height: 1.6;
+                                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        @item.Describe
+                                    </p>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="rating text-warning small">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <span class="text-secondary ms-1">(4.8)</span>
+                                        </div>
+                                        <a href="javascript:void(0);" onclick="addToCart(@item.Id)" class="btn btn-sm text-white px-3" style="background: linear-gradient(135deg, #fdcb6e, #e17055); border-radius: 20px;">
+                                            <i class="fas fa-plus me-1"></i>Đặt
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+
+
+            <div class="text-center mt-5">
+                <a href="/home/menu" class="btn btn-custom btn-lg">
+                    <i class="fas fa-eye me-2"></i>Xem Thực Đơn Đầy Đủ
+                </a>
+            </div>
+        </div>
+    </section>
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="section-title" style="font-weight: 700; font-size: 2.5rem; color: #333; margin-bottom: 20px;">
+                        Tại Sao Chọn Dola Restaurant?
+                    </h2>
+                    <p class="lead" style="color: #666; font-size: 1.1rem;">
+                        Dola mang đến trải nghiệm ẩm thực tuyệt vời với dịch vụ chuyên nghiệp và không gian ấm cúng
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h4>Thực Đơn Đa Dạng</h4>
+                        <p>Hơn 200 món ăn từ các miền Bắc, Trung, Nam với hương vị đặc trưng và cách chế biến tinh tế</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h4>Đặt Bàn Online</h4>
+                        <p>Hệ thống đặt bàn thông minh, nhanh chóng và tiện lợi. Xác nhận tức thì, không phải chờ đợi</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <h4>Giao Hàng Tận Nơi</h4>
+                        <p>Dịch vụ giao hàng nhanh chóng trong bán kính 10km, đảm bảo món ăn luôn nóng hổi và ngon nhất</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <h4>Chất Lượng Cao Cấp</h4>
+                        <p>Nguyên liệu tươi ngon được chọn lọc kỹ càng, đầu bếp giàu kinh nghiệm với tay nghề cao</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4>Phục Vụ Chuyên Nghiệp</h4>
+                        <p>Đội ngũ nhân viên được đào tạo bài bản, phục vụ tận tình và chu đáo trong từng chi tiết</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h4>Không Gian Sang Trọng</h4>
+                        <p>Thiết kế hiện đại kết hợp truyền thống, không gian ấm cúng phù hợp cho mọi dịp đặc biệt</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Testimonials Section -->
+    <section style="padding: 80px 0; background: #f8f9fa;">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-lg-8 mx-auto">
+                    <h2 style="font-weight: 700; font-size: 2.5rem; color: #333; margin-bottom: 20px;">
+                        Khách Hàng Nói Gì Về Chúng Tôi
+                    </h2>
+                    <p class="lead" style="color: #666; font-size: 1.1rem;">
+                        Những phản hồi tích cực từ khách hàng là động lực để chúng tôi không ngừng cải thiện
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; height: 100%;">
+                        <div class="testimonial-avatar" style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="rating mb-3" style="color: #ffd700;">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p style="color: #666; font-style: italic; margin-bottom: 20px; line-height: 1.7;">
+                            "Món ăn rất ngon, phục vụ tận tình. Không gian nhà hàng đẹp và ấm cúng. Tôi sẽ quay lại lần nữa!"
+                        </p>
+                        <h6 style="color: #333; font-weight: 600;">Nguyễn Văn An</h6>
+                        <small style="color: #999;">Khách hàng thân thiết</small>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; height: 100%;">
+                        <div class="testimonial-avatar" style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #ff7675, #fd79a8); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="rating mb-3" style="color: #ffd700;">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p style="color: #666; font-style: italic; margin-bottom: 20px; line-height: 1.7;">
+                            "Hệ thống đặt bàn online rất tiện lợi. Món ăn đa dạng và chất lượng. Giá cả hợp lý!"
+                        </p>
+                        <h6 style="color: #333; font-weight: 600;">Trần Thị Mai</h6>
+                        <small style="color: #999;">Food Blogger</small>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; height: 100%;">
+                        <div class="testimonial-avatar" style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #00b894, #00cec9); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="rating mb-3" style="color: #ffd700;">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p style="color: #666; font-style: italic; margin-bottom: 20px; line-height: 1.7;">
+                            "Dịch vụ giao hàng nhanh, món ăn vẫn nóng và ngon. Đội ngũ nhân viên rất chuyên nghiệp!"
+                        </p>
+                        <h6 style="color: #333; font-weight: 600;">Lê Hoàng Nam</h6>
+                        <small style="color: #999;">Khách hàng VIP</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section style="padding: 80px 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2 style="font-weight: 700; font-size: 2.5rem; margin-bottom: 20px;">
+                        Sẵn Sàng Trải Nghiệm?
+                    </h2>
+                    <p class="lead" style="margin-bottom: 40px; opacity: 0.9; font-size: 1.2rem;">
+                        Đặt bàn ngay hôm nay để thưởng thức những món ăn tuyệt vời nhất tại Dola Restaurant
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="/booking/book" class="btn btn-light btn-lg me-3" style="color: #667eea; font-weight: 600; padding: 15px 30px; border-radius: 25px;">
+                            <i class="fas fa-calendar-alt me-2"></i>Đặt Bàn Ngay
+                        </a>
+                        <a href="tel:(028)1234567" class="btn btn-outline-light btn-lg" style="padding: 15px 30px; border-radius: 25px; border-width: 2px;">
+                            <i class="fas fa-phone me-2"></i>Gọi Điện Đặt Bàn
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section style="padding: 60px 0; background: white;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h3 style="font-weight: 600; color: #333; margin-bottom: 15px;">
+                        <i class="fas fa-envelope me-3" style="color: #667eea;"></i>
+                        Đăng Ký Nhận Tin
+                    </h3>
+                    <p style="color: #666; margin-bottom: 0;">
+                        Nhận thông tin về các món ăn mới, khuyến mãi đặc biệt và sự kiện độc quyền
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <form class="newsletter-form" style="display: flex; gap: 10px;">
+                        <input type="email" class="form-control" placeholder="Nhập email của bạn..." style="border-radius: 25px; padding: 12px 20px; border: 2px solid #e9ecef; flex: 1;">
+                        <button type="submit" class="btn btn-custom" style="border-radius: 25px; padding: 12px 25px; white-space: nowrap;">
+                            <i class="fas fa-paper-plane me-2"></i>Đăng Ký
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate stats when in view
+        const observerOptions = {
+            threshold: 1
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach(stat => {
+                        stat.style.animation = 'countUp 2s ease-out';
+                    });
+                }
+            });
+        }, observerOptions);
+
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            observer.observe(statsSection);
+        }
+
+        // Newsletter form submission
+        const newsletterForm = document.querySelector('.newsletter-form');
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('input[type="email"]').value;
+                if (email) {
+                    alert('Cảm ơn bạn đã đăng ký! Chúng tôi sẽ gửi thông tin mới nhất đến email của bạn.');
+                    this.reset();
+                }
+            });
+        }
+    });
+    //Add to Cart
+    function addToCart(foodId) {
+        fetch('/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `foodId=${foodId}&quantity=1`
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                alert("Đã thêm món vào giỏ!");
+            }
+        });
+    }
+</script>
+<script>
+    let currentSlideIndex = 0;
+    let totalSlides = 5;
+    let autoPlayInterval;
+    let isAutoPlaying = true;
+
+    function updateSlide() {
+        const wrapper = document.getElementById('bannerWrapper');
+        const dots = document.querySelectorAll('.dot');
+
+        wrapper.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlideIndex);
+        });
+    }
+
+    function changeSlide(direction) {
+        currentSlideIndex += direction;
+
+        if (currentSlideIndex >= totalSlides) {
+            currentSlideIndex = 0;
+        } else if (currentSlideIndex < 0) {
+            currentSlideIndex = totalSlides - 1;
+        }
+
+        updateSlide();
+    }
+
+    function currentSlide(slideIndex) {
+        currentSlideIndex = slideIndex - 1;
+        updateSlide();
+    }
+
+    function startAutoPlay() {
+        autoPlayInterval = setInterval(() => {
+            changeSlide(1);
+        }, 5000); // 5 giây cho mỗi slide
+    }
+
+    function stopAutoPlay() {
+        clearInterval(autoPlayInterval);
+    }
+
+    function toggleAutoPlay() {
+        const playPauseBtn = document.getElementById('playPauseBtn');
+
+        if (isAutoPlaying) {
+            stopAutoPlay();
+            playPauseBtn.innerHTML = '▶️ Phát';
+            isAutoPlaying = false;
+        } else {
+            startAutoPlay();
+            playPauseBtn.innerHTML = '⏸️ Tạm dừng';
+            isAutoPlaying = true;
+        }
+    }
+
+    // Tự động dừng khi hover và tiếp tục khi không hover
+    const bannerContainer = document.querySelector('.banner-container');
+
+    bannerContainer.addEventListener('mouseenter', () => {
+        if (isAutoPlaying) {
+            stopAutoPlay();
+        }
+    });
+
+    bannerContainer.addEventListener('mouseleave', () => {
+        if (isAutoPlaying) {
+            startAutoPlay();
+        }
+    });
+
+    // Bắt đầu auto play khi trang load
+    startAutoPlay();
+
+    // Hỗ trợ vuốt trên mobile
+    let startX = 0;
+    let isDown = false;
+
+    bannerContainer.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        isDown = true;
+    });
+
+    bannerContainer.addEventListener('touchmove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+    });
+
+    bannerContainer.addEventListener('touchend', (e) => {
+        if (!isDown) return;
+        isDown = false;
+
+        const endX = e.changedTouches[0].clientX;
+        const diffX = startX - endX;
+
+        if (Math.abs(diffX) > 50) {
+            if (diffX > 0) {
+                changeSlide(1);
+            } else {
+                changeSlide(-1);
+            }
+        }
+    });
+
+    // Preload images for better performance
+    const imageUrls = [
+        'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80',
+        'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1981&q=80',
+        'https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+        'https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80',
+        'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&auto=format&fit=crop&w=1980&q=80'
+    ];
+
+    imageUrls.forEach(url => {
+        const img = new Image();
+        img.src = url;
+    });
+</script>

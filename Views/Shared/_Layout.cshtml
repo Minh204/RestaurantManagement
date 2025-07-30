@@ -1,0 +1,832 @@
+﻿
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Dola Restaurant</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        /* Header Styles */
+        .navbar-custom {
+            background: linear-gradient(135deg, #EEB462 0%, #CD7672 100%);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: white !important;
+        }
+        .navbar-nav {
+            width: fit-content;
+        }
+        .navbar-nav .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+            .navbar-nav .nav-link:hover,
+            .navbar-nav .nav-link.active {
+                color: white !important;
+                transform: translateY(-2px);
+            }
+
+            .navbar-nav .nav-link::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: -5px;
+                left: 50%;
+                background-color: #fff;
+                transition: all 0.3s ease;
+                transform: translateX(-50%);
+            }
+            .navbar-nav .nav-link:hover::after,
+            .navbar-nav .nav-link.active::after {
+                width: 80%;
+            }
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23ff7675" width="1200" height="600"/><rect fill="%23fd79a8" x="300" y="150" width="600" height="300" opacity="0.7"/></svg>');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 0;
+            text-align: center;
+        }
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #ff7675, #fd79a8);
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+            .btn-custom:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px rgba(255, 118, 117, 0.4);
+            }
+        /* Features Section */
+        .features-section {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+        .feature-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+            border: none;
+        }
+            .feature-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            }
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .feature-card h4 {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.7;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 0;
+            color: white;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #868f96 0%, #596164 100%);
+            color: white;
+            padding: 50px 0 20px;
+        }
+
+            .footer h5 {
+                color: #ecf0f1;
+                margin-bottom: 20px;
+                font-weight: 600;
+            }
+
+            .footer a {
+                color: #bdc3c7;
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+                .footer a:hover {
+                    color: #3498db;
+                }
+
+        .footer-bottom {
+            border-top: 1px solid #34495e;
+            padding-top: 20px;
+            margin-top: 30px;
+            text-align: center;
+            color: #95a5a6;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-popup {
+            display: none;
+            position: absolute;
+            top: 110%; /* Cách icon một chút */
+            right: 0;
+            background-color: #fff;
+            padding: 12px 16px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 280px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .search-container:hover .search-popup {
+            display: block;
+        }
+
+        /* Style cho form và input bên trong popup */
+        .search-popup form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-popup input[type="text"] {
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+            .search-popup input[type="text"]:focus {
+                border-color: #007bff;
+            }
+
+        .search-popup button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+            .search-popup button:hover {
+                background-color: #0056b3;
+            }
+
+		/* Chatbox Styles */
+        /* Nút toggle chatbot */
+        .toggle-chatbot {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .toggle-chatbot:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+            }
+
+            .toggle-chatbot:active {
+                transform: translateY(-1px);
+            }
+
+            .toggle-chatbot.active {
+                background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            }
+
+        /* Chatbox container */
+        .chatbox {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0) translateY(20px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+        }
+
+            .chatbox.show {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+
+        /* Header chatbox */
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 16px;
+            position: relative;
+        }
+
+            .chat-header::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+        /* Messages container */
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+            .chat-messages::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .chat-messages::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 3px;
+            }
+
+            .chat-messages::-webkit-scrollbar-thumb {
+                background: rgba(102, 126, 234, 0.3);
+                border-radius: 3px;
+            }
+
+        /* Message styles */
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+            .message.user {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                align-self: flex-end;
+                border-bottom-right-radius: 6px;
+            }
+
+            .message.bot {
+                background: #f8f9fa;
+                color: #333;
+                align-self: flex-start;
+                border-bottom-left-radius: 6px;
+                border: 1px solid rgba(0, 0, 0, 0.05);
+            }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-radius: 18px;
+            border-bottom-left-radius: 6px;
+            max-width: 80px;
+            align-self: flex-start;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+            .typing-dots span {
+                width: 6px;
+                height: 6px;
+                background: #999;
+                border-radius: 50%;
+                animation: typingDots 1.4s infinite ease-in-out;
+            }
+
+                .typing-dots span:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
+
+                .typing-dots span:nth-child(3) {
+                    animation-delay: 0.4s;
+                }
+
+        /* Chat input */
+        .chat-input {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+            .chat-input input {
+                flex: 1;
+                padding: 12px 16px;
+                border: 2px solid rgba(102, 126, 234, 0.1);
+                border-radius: 25px;
+                font-size: 14px;
+                outline: none;
+                transition: all 0.3s ease;
+                background: white;
+            }
+
+                .chat-input input:focus {
+                    border-color: #667eea;
+                    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                }
+
+            .chat-input button {
+                width: 45px;
+                height: 45px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: none;
+                border-radius: 50%;
+                color: white;
+                cursor: pointer;
+                font-size: 16px;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+                .chat-input button:hover {
+                    transform: scale(1.05);
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                }
+
+                .chat-input button:active {
+                    transform: scale(0.95);
+                }
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                    <i class="fas fa-utensils me-2"></i>Dola Restaurant
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/">
+                                <i title="Trang chủ" class="fas fa-home me-1"></i>Trang Chủ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/home/menu">
+                                <i title="Thực đơn" class="fas fa-list me-1"></i>Thực Đơn
+                            </a>
+                        </li>  
+                        <li class="nav-item">
+                            <a class="nav-link" href="/booking/book">
+                                <i title="Đặt bàn" class="fas fa-calendar-alt me-1"></i>Đặt Bàn
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/order">
+                                <i title="Đặt ship" class="fas fa-motorcycle me-1"></i>Đặt Ship
+                            </a>
+                        </li>
+                        @await Component.InvokeAsync("CartSummary")
+
+                        <li class="nav-item position-relative search-container">
+                            <a class="nav-link" href="javascript:void(0);">
+                                <i class="fas fa-search"></i>
+                            </a>
+                            <div class="search-popup">
+                                <form method="get" action="/home/search" class="d-flex">
+                                    <input type="text" name="keyword" placeholder="Tìm món ăn..." class="form-control form-control-sm me-2" />
+                                    <button type="submit" class="btn btn-sm btn-primary">Tìm</button>
+                                </form>
+                            </div>
+                        </li>
+
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/index">
+                                    <i title="Dashboard" class="fas fa-tachometer-alt me-1"></i>
+                                </a>
+                            </li>
+                        }
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Staff"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="/staff/index">
+                                    <i title="Dashboard" class="fas fa-tachometer-alt me-1"></i>
+                                </a>
+                            </li>
+                        }
+                        <!-- Nếu chưa đăng nhập -->
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            if (Context.Request.Path != "/account/login")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/account/login">
+                                        <i class="fas fa-user me-1"></i>Đăng Nhập
+                                    </a>
+                                </li>
+                            }
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="/account/register">
+                                    <i class="fas fa-user-plus me-2"></i>Đăng ký
+                                </a>
+                            </li>
+                        }
+
+                        else
+                        {
+                            <!-- Nếu đã đăng nhập -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i title="Profile" class="fa-solid fa-circle-user"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="/account/editprofile">
+                                            <i class="fa-solid fa-user"></i> Thông tin cá nhân
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="/account/logout">
+                                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+    <!-- Nút bật/tắt chatbot -->
+    <button id="toggle-chatbot-btn" class="toggle-chatbot">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Hộp chatbot -->
+    <div id="chatbox" class="chatbox">
+        <div class="chat-header">
+            <i class="fas fa-robot"></i> Trợ lý AI
+        </div>
+        <div id="chat-messages" class="chat-messages">
+            <div class="message bot">
+				Xin chào, tôi là trợ lý AI của Dola Restaurant. Bạn cần giúp đỡ gì?
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Nhập câu hỏi của bạn..." />
+            <button onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5><i class="fas fa-utensils me-2"></i>Dola Restaurant</h5>
+                    <p>Nhà hàng cao cấp với hương vị truyền thống Việt Nam, phục vụ các món ăn ngon nhất từ khắp mọi miền đất nước.</p>
+                    <div class="social-links">
+                        <a href="#" class="me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Menu</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/menu">Thực Đơn</a></li>
+                        <li><a href="/menu/appetizers">Khai Vị</a></li>
+                        <li><a href="/menu/main">Món Chính</a></li>
+                        <li><a href="/menu/desserts">Tráng Miệng</a></li>
+                        <li><a href="/menu/drinks">Đồ Uống</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Dịch Vụ</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/reservation">Đặt Bàn Online</a></li>
+                        <li><a href="/order">Đặt Món Tại Nhà</a></li>
+                        <li><a href="/catering">Tiệc Cưới & Sự Kiện</a></li>
+                        <li><a href="/gift-card">Thẻ Quà Tặng</a></li>
+                        <li><a href="/loyalty">Chương Trình Khách Hàng Thân Thiết</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Liên Hệ</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-map-marker-alt me-2"></i>38 Hoàng Quốc Việt, Phường Nghĩa Tân, Quận Cầu Giấy, Hà Nội</li>
+                        <li><i class="fas fa-phone me-2"></i>(028) 1234 5678</li>
+                        <li><i class="fas fa-envelope me-2"></i>info@dola-restaurant.com</li>
+                        <li><i class="fas fa-clock me-2"></i>08:00 - 22:00 hàng ngày</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Dola Restaurant. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar-custom');
+
+            if (window.scrollY > 2500) {
+                navbar.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                navbar.style.backdropFilter = 'blur(10px)';
+            }
+            else {
+                navbar.style.background = 'linear-gradient(135deg, #EEB462 0%, #CD7672 100%)';
+                navbar.style.backdropFilter = 'none';
+            }
+        });
+
+        // Active nav link
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentLocation = location.pathname;
+            const menuItems = document.querySelectorAll('.navbar-nav .nav-link');
+
+            menuItems.forEach(item => {
+                if (item.getAttribute('href') === currentLocation) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        });
+    </script>
+    <script>
+        // Lấy các elements
+        const toggleBtn = document.getElementById('toggle-chatbot-btn');
+        const chatbox = document.getElementById('chatbox');
+        const messagesContainer = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+
+        // Biến trạng thái
+        let isOpen = false;
+
+        // Toggle chatbot
+        toggleBtn.addEventListener('click', function() {
+            isOpen = !isOpen;
+
+            if (isOpen) {
+                chatbox.style.display = 'flex';
+                setTimeout(() => {
+                    chatbox.classList.add('show');
+                }, 10);
+                toggleBtn.classList.add('active');
+                toggleBtn.innerHTML = '<i class="fas fa-times"></i>';
+                userInput.focus();
+            } else {
+                chatbox.classList.remove('show');
+                setTimeout(() => {
+                    chatbox.style.display = 'none';
+                }, 300);
+                toggleBtn.classList.remove('active');
+                toggleBtn.innerHTML = '<i class="fas fa-comments"></i>';
+            }
+        });
+
+        // Gửi tin nhắn với API
+        async function sendMessage() {
+            const input = document.getElementById("user-input");
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Thêm tin nhắn người dùng
+            appendMessage("Bạn", message, "user");
+            input.value = "";
+
+            // Hiện typing indicator
+            showTypingIndicator();
+
+            try {
+                const response = await fetch("/api/gemini/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                const reply = data.reply || "Bot không có phản hồi.";
+
+                // Ẩn typing indicator và hiện phản hồi
+                hideTypingIndicator();
+                appendMessage("Bot", reply, "bot");
+
+            } catch (error) {
+                console.error("Lỗi:", error);
+                hideTypingIndicator();
+                appendMessage("Bot", "Đã xảy ra lỗi khi gọi API.", "bot");
+            }
+        }
+
+        // Thêm tin nhắn vào chat (cải tiến từ code gốc)
+        function appendMessage(sender, text, type) {
+            const chatMessages = document.getElementById("chat-messages");
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `message ${type}`;
+
+            // Không hiển thị tên sender trong UI hiện đại
+            msgDiv.textContent = text;
+
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Hiện typing indicator
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.classList.add('typing-indicator');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Ẩn typing indicator
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // Xử lý Enter key
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Click outside để đóng chatbot
+        document.addEventListener('click', function(e) {
+            if (isOpen && !chatbox.contains(e.target) && !toggleBtn.contains(e.target)) {
+                toggleBtn.click();
+            }
+        });
+
+        // Ngăn đóng khi click vào chatbox
+        chatbox.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

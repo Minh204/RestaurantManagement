@@ -1,0 +1,34 @@
+﻿@model RestaurantManagement.Models.TableViewModel
+@{
+    ViewData["Title"] = "Thêm Bàn Ăn";
+    var floors = ViewBag.Floors as List<SelectListItem>;
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<form asp-action="Create" method="post">
+    <div class="form-group mb-3">
+        <label asp-for="TableName" class="form-label">Tên bàn</label>
+        <input asp-for="TableName" class="form-control" />
+        <span asp-validation-for="TableName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="FloorId" class="form-label">Tầng</label>
+        <select asp-for="FloorId" asp-items="floors" class="form-select"></select>
+        <span asp-validation-for="FloorId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="TableStatus" class="form-label">Trạng thái</label>
+        <select asp-for="TableStatus" class="form-select">
+            <option value="Empty">Trống</option>
+            <option value="Reserved">Đã đặt</option>
+            <option value="Occupied">Đang sử dụng</option>
+        </select>
+        <span asp-validation-for="TableStatus" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Thêm mới</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>

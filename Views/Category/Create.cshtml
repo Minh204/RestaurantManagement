@@ -1,0 +1,23 @@
+﻿@model Category
+@{
+    ViewData["Title"] = "Thêm danh mục";
+	Layout = "_AdminLayout";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+    <form asp-action="Create">
+        <div class="mb-3">
+            <label class="form-label">Tên danh mục</label>
+            <input asp-for="CategoryName" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Mô tả</label>
+            <textarea asp-for="Describe" class="form-control" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Lưu</button>
+        <a href="/Category" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>
+
+

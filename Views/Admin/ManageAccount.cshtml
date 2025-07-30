@@ -1,0 +1,514 @@
+﻿@model List<RestaurantManagement.Models.Account>
+@{
+    ViewData["Title"] = "Quản lý tài khoản";
+    Layout = "_AdminLayout";
+    var selectedRole = ViewBag.SelectedRoleId as int?;
+    var roles = ViewBag.RoleList as List<SelectListItem>;
+}
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin: -1rem -15px 2rem -15px;
+        border-radius: 0 0 20px 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .filter-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: none;
+        transition: transform 0.3s ease;
+    }
+
+        .filter-card:hover {
+            transform: translateY(-2px);
+        }
+
+    .custom-select {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+        .custom-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            outline: none;
+        }
+
+    .accounts-table {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: none;
+    }
+
+    .table thead th {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        border: none;
+        font-size: 0.85rem;
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+        .table tbody tr:hover {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%);
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        border: none;
+        font-weight: 500;
+    }
+
+    .role-dropdown {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 0.5rem;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+        .role-dropdown:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.1rem rgba(102, 126, 234, 0.25);
+        }
+
+    .status-badge {
+        padding: 0.6rem 1.2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .status-active {
+        background: linear-gradient(135deg, #10ac84 0%, #1dd1a1 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(16, 172, 132, 0.3);
+    }
+
+    .status-inactive {
+        background: linear-gradient(135deg, #ee5a52 0%, #f53b57 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(238, 90, 82, 0.3);
+    }
+
+    .action-btn {
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0 0.2rem;
+        font-size: 0.85rem;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #3742fa 0%, #2f3542 100%);
+        color: white;
+    }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(55, 66, 250, 0.3);
+            color: white;
+        }
+
+    .btn-lock {
+        background: linear-gradient(135deg, #ff3838 0%, #ff6b6b 100%);
+        color: white;
+    }
+
+        .btn-lock:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 56, 56, 0.3);
+            color: white;
+        }
+
+    .btn-unlock {
+        background: linear-gradient(135deg, #00d2d3 0%, #54a0ff 100%);
+        color: white;
+    }
+
+        .btn-unlock:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 210, 211, 0.3);
+            color: white;
+        }
+
+    .stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .stats-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .stats-label {
+        color: #7f8c8d;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .page-subtitle {
+        opacity: 0.9;
+        font-size: 1.1rem;
+        margin-top: 0.5rem;
+    }
+
+
+    .animate-fade-in {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+</style>
+
+<div class="page-header">
+    <div class="container">
+        <h1 class="page-title">
+            <i class="bi bi-people-fill me-3"></i>
+            Quản Lý Tài Khoản
+        </h1>
+        <p class="page-subtitle">Quản lý và theo dõi tất cả tài khoản người dùng trong hệ thống</p>
+    </div>
+</div>
+
+<div class="container animate-fade-in">
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number text-primary">@Model.Count()</div>
+                <div class="stats-label">Tổng tài khoản</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number text-success">@Model.Count(a => a.IsActive)</div>
+                <div class="stats-label">Đang hoạt động</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number text-danger">@Model.Count(a => !a.IsActive)</div>
+                <div class="stats-label">Đã khóa</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number text-info">@(roles?.Count ?? 0)</div>
+                <div class="stats-label">Loại quyền</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="filter-card">
+        <form asp-action="ManageAccount" method="get">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold text-dark">
+                        <i class="bi bi-funnel-fill me-2"></i>
+                        Lọc theo loại tài khoản:
+                    </label>
+                </div>
+                <div class="col-md-6">
+                    <select name="roleId" onchange="this.form.submit()" class="form-select custom-select">
+                        <option value="">-- Tất cả loại tài khoản --</option>
+                        @foreach (var role in roles)
+                        {
+                            <option value="@role.Value" selected="@(role.Value == selectedRole?.ToString() ? "selected" : null)">
+                                @role.Text
+                            </option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Main Table -->
+    <div class="accounts-table">
+        @if (Model != null && Model.Any())
+        {
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th><i class="bi bi-person-badge me-2"></i>Tài khoản</th>
+                        <th><i class="bi bi-person me-2"></i>Họ tên</th>
+                        <th><i class="bi bi-telephone me-2"></i>Điện thoại</th>
+                        <th><i class="bi bi-envelope me-2"></i>Email</th>
+                        <th><i class="bi bi-shield-check me-2"></i>Quyền</th>
+                        <th><i class="bi bi-activity me-2"></i>Trạng thái</th>
+                        <th><i class="bi bi-gear me-2"></i>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var acc in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-3">
+                                        <i class="bi bi-person-fill"></i>
+                                    </div>
+                                    <strong>@acc.UserName</strong>
+                                </div>
+                            </td>
+                            <td>@acc.FullName</td>
+                            <td>
+                                <a href="tel:@acc.Phone" class="text-decoration-none">
+                                    <i class="bi bi-telephone me-1"></i>@acc.Phone
+                                </a>
+                            </td>
+                            <td>
+                                <a href="mailto:@acc.Email" class="text-decoration-none">
+                                    <i class="bi bi-envelope me-1"></i>@acc.Email
+                                </a>
+                            </td>
+                            <td>
+                                <select class="form-select role-dropdown" data-id="@acc.Id">
+                                    @foreach (var role in ViewBag.RoleList as List<SelectListItem>)
+                                    {
+                                        <option value="@role.Value" selected="@(role.Value == acc.RoleId.ToString() ? "selected" : null)">
+                                            @role.Text
+                                        </option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                @if (acc.IsActive)
+                                {
+                                    <span class="status-badge status-active">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        Đang hoạt động
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge status-inactive">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                        Đã khóa
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <!-- Nút sửa thông tin -->
+                                    <a href="/Admin/EditAccount/@acc.Id" class="action-btn btn-edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                        Sửa
+                                    </a>
+
+                                    <!-- Nút Khóa/Mở -->
+                                    <form asp-action="ToggleActive" method="post" style="display:inline">
+                                        <input type="hidden" name="id" value="@acc.Id" />
+                                        <input type="hidden" name="isActive" value="@(acc.IsActive ? "false" : "true")" />
+                                        <button type="submit" class="action-btn @(acc.IsActive ? "btn-lock" : "btn-unlock")">
+                                            <i class="bi @(acc.IsActive ? "bi-lock-fill" : "bi-unlock")"></i>
+                                            @(acc.IsActive ? "Khóa" : "Mở")
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <h4>Không có tài khoản nào</h4>
+                <p>Hiện tại chưa có tài khoản nào trong hệ thống hoặc không có tài khoản nào phù hợp với bộ lọc.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            // Animation for page load
+            $('.animate-fade-in').css('opacity', '0').animate({opacity: 1}, 800);
+
+            // Enhanced role dropdown change
+            $('.role-dropdown').change(function () {
+                var accountId = $(this).data('id');
+                var newRoleId = $(this).val();
+                var $dropdown = $(this);
+
+                // Show loading state
+                $dropdown.prop('disabled', true);
+
+                Swal.fire({
+                    title: 'Đang cập nhật...',
+                    text: 'Vui lòng đợi trong giây lát',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: '/Admin/UpdateRole',
+                    method: 'POST',
+                    data: {
+                        id: accountId,
+                        newRoleId: newRoleId
+                    },
+                    success: function () {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: 'Cập nhật quyền thành công',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        $dropdown.prop('disabled', false);
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Không thể cập nhật quyền. Vui lòng thử lại.',
+                            confirmButtonText: 'Đóng'
+                        });
+                        $dropdown.prop('disabled', false);
+                        // Reset dropdown to previous value
+                        location.reload();
+                    }
+                });
+            });
+
+            // Enhanced toggle active with confirmation
+            $('form[asp-action="ToggleActive"]').submit(function(e) {
+                e.preventDefault();
+                var form = this;
+                var isActive = $(form).find('input[name="isActive"]').val() === 'true';
+                var action = isActive ? 'mở khóa' : 'khóa';
+                var userName = $(form).closest('tr').find('td:first strong').text();
+
+                Swal.fire({
+                    title: 'Xác nhận ' + action,
+                    text: `Bạn có chắc chắn muốn ${action} tài khoản "${userName}"?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: isActive ? '#00d2d3' : '#ff3838',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Show loading
+                        Swal.fire({
+                            title: 'Đang xử lý...',
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        // Submit form
+                        form.submit();
+                    }
+                });
+            });
+
+            // Add hover effects
+            $('.table tbody tr').hover(
+                function() {
+                    $(this).addClass('table-hover-effect');
+                },
+                function() {
+                    $(this).removeClass('table-hover-effect');
+                }
+            );
+        });
+    </script>
+}

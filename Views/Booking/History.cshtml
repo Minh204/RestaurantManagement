@@ -1,0 +1,408 @@
+﻿@model List<BookingHistoryViewModel>
+@{
+    ViewData["Title"] = "Lịch sử đặt bàn";
+}
+<link rel="stylesheet" href="~/css/book.css" asp-append-version="true" />
+<style>
+    .page-header {
+        background: #FFB266;
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+        .page-header h2 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 2.5rem;
+            text-align: center;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h4 {
+            color: #495057;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+    .booking-table {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        border: none;
+    }
+
+        .booking-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+            .booking-table thead th {
+                border: none;
+                color: white;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 1.2rem 1rem;
+                font-size: 0.85rem;
+            }
+
+        .booking-table tbody tr {
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+            .booking-table tbody tr:hover {
+                background-color: #f8f9ff;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+
+        .booking-table tbody td {
+            padding: 1.2rem 1rem;
+            border: none;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+            font-weight: 500;
+        }
+
+    .table-name {
+        font-weight: 700;
+        color: #495057;
+        font-size: 1.1rem;
+    }
+
+    .booking-date {
+        color: #6c757d;
+        font-family: 'Courier New', monospace;
+    }
+
+    .time-slot {
+        background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+        color: #2d3436;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-block;
+    }
+
+    .people-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: #495057;
+    }
+
+        .people-count i {
+            color: #6c757d;
+        }
+
+    .status-badge {
+        padding: 0.6rem 1.2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: none;
+    }
+
+    .status-confirmed {
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        color: white;
+    }
+
+    .status-pending {
+        background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+        color: white;
+    }
+
+    .status-cancelled {
+        background: linear-gradient(135deg, #d63031 0%, #e84393 100%);
+        color: white;
+    }
+
+    .cancel-btn {
+        background: linear-gradient(135deg, #d63031 0%, #e84393 100%);
+        border: none;
+        color: white;
+        padding: 0.6rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .cancel-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(214, 48, 49, 0.4);
+            background: linear-gradient(135deg, #e84393 0%, #d63031 100%);
+        }
+
+    .no-action {
+        color: #adb5bd;
+        font-size: 1.2rem;
+        font-weight: 300;
+    }
+
+    .container-custom {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .card-stats {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-item h3 {
+        margin: 0;
+        color: #667eea;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .stat-item p {
+        margin: 0.5rem 0 0 0;
+        color: #6c757d;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+    }
+
+
+    .booking-table {
+        font-size: 0.85rem;
+    }
+
+        .booking-table thead th,
+        .booking-table tbody td {
+            padding: 0.8rem 0.5rem;
+        }
+
+    .time-slot {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .cancel-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    }
+</style>
+
+<div class="container-custom mt-5 pt-5">
+    <div class="page-header">
+        <h2><i class="fas fa-history me-3"></i>Lịch sử đặt bàn</h2>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="fas fa-calendar-times"></i>
+            <h4>Chưa có lịch sử đặt bàn</h4>
+            <p>Bạn chưa thực hiện đặt bàn nào. Hãy bắt đầu đặt bàn đầu tiên của bạn!</p>
+            <a href="#" class="btn btn-primary btn-lg mt-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 25px; padding: 1rem 2rem; font-weight: 600;">
+                <i class="fas fa-plus me-2"></i>Đặt bàn ngay
+            </a>
+        </div>
+    }
+    else
+    {
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="card-stats">
+                <div class="stat-item">
+                    <h3>@Model.Count()</h3>
+                    <p>Tổng số đặt bàn</p>
+                </div>
+            </div>
+            <div class="card-stats">
+                <div class="stat-item">
+                    <h3>@Model.Count(b => b.IsConfirmed)</h3>
+                    <p>Đã xác nhận</p>
+                </div>
+            </div>
+            <div class="card-stats">
+                <div class="stat-item">
+                    <h3>@Model.Count(b => !b.IsConfirmed && !b.IsCancelled)</h3>
+                    <p>Đang chờ</p>
+                </div>
+            </div>
+            <div class="card-stats">
+                <div class="stat-item">
+                    <h3>@Model.Count(b => b.IsCancelled)</h3>
+                    <p>Đã hủy</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table booking-table">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-chair me-2"></i>Bàn</th>
+                        <th><i class="fas fa-calendar me-2"></i>Ngày đặt</th>
+                        <th><i class="fas fa-clock me-2"></i>Khung giờ</th>
+                        <th><i class="fas fa-users me-2"></i>Số người</th>
+                        <th><i class="fas fa-info-circle me-2"></i>Trạng thái</th>
+                        <th><i class="fas fa-cogs me-2"></i>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var b in Model.OrderByDescending(x => x.BookingDate))
+                    {
+                        <tr>
+                            <td>
+                                <span class="table-name">@b.TableName</span>
+                            </td>
+                            <td>
+                                <span class="booking-date">@b.BookingDate.ToString("dd/MM/yyyy")</span>
+                                <br>
+                                <small class="text-muted">@b.BookingDate.ToString("HH:mm")</small>
+                            </td>
+                            <td>
+                                <span class="time-slot">
+                                    <i class="fas fa-clock me-1"></i>@b.TimeSlot
+                                </span>
+                            </td>
+                            <td>
+                                <span class="people-count">
+                                    <i class="fas fa-user"></i>
+                                    @b.NumberOfPeople người
+                                </span>
+                            </td>
+                            <td>
+                                @if (b.IsCancelled)
+                                {
+                                    <span class="badge status-badge status-cancelled">
+                                        <i class="fas fa-times me-1"></i>Đã hủy
+                                    </span>
+                                }
+                                else if (b.IsConfirmed)
+                                {
+                                    <span class="badge status-badge status-confirmed">
+                                        <i class="fas fa-check me-1"></i>Đã xác nhận
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge status-badge status-pending">
+                                        <i class="fas fa-hourglass-half me-1"></i>Đang chờ
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                @if (!b.IsCancelled && !b.IsConfirmed)
+                                {
+                                    <form asp-action="Cancel" method="post" onsubmit="return confirm('⚠️ Bạn có chắc chắn muốn hủy đặt bàn này không?')" style="display: inline;">
+                                        <input type="hidden" name="id" value="@b.Id" />
+                                        <button type="submit" class="cancel-btn">
+                                            <i class="fas fa-times me-1"></i>Hủy đặt
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="no-action">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<script>
+    // Smooth animations on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('.booking-table tbody tr');
+        rows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                row.style.transition = 'all 0.5s ease';
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+
+        // Stats counter animation
+        const stats = document.querySelectorAll('.stat-item h3');
+        stats.forEach(stat => {
+            const finalValue = parseInt(stat.textContent);
+            let currentValue = 0;
+            const increment = finalValue / 30;
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= finalValue) {
+                    currentValue = finalValue;
+                    clearInterval(timer);
+                }
+                stat.textContent = Math.floor(currentValue);
+            }, 50);
+        });
+    });
+
+    // Enhanced confirm dialog
+    function confirmCancel() {
+        return Swal.fire({
+            title: 'Xác nhận hủy đặt bàn',
+            text: 'Bạn có chắc chắn muốn hủy đặt bàn này không?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d63031',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Hủy đặt bàn',
+            cancelButtonText: 'Quay lại',
+            reverseButtons: true
+        }).then((result) => {
+            return result.isConfirmed;
+        });
+    }
+</script>

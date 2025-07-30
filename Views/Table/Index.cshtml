@@ -1,0 +1,446 @@
+﻿@model List<TableViewModel>
+@{
+    ViewData["Title"] = "Quản lý bàn ăn";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 300;
+        margin: 0;
+        text-align: center;
+    }
+
+    .page-subtitle {
+        text-align: center;
+        margin-top: 0.5rem;
+        opacity: 0.9;
+        font-weight: 300;
+    }
+
+    .action-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .btn-create {
+        background: linear-gradient(45deg, #28a745, #20c997);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+            color: white;
+        }
+
+    .search-box {
+        position: relative;
+        width: 300px;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 20px 12px 45px;
+        border: 2px solid #e9ecef;
+        border-radius: 25px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .modern-table {
+        margin: 0;
+        border: none;
+    }
+
+        .modern-table thead th {
+            background: linear-gradient(135deg, #343a40, #495057);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            padding: 1.2rem 1rem;
+            border: none;
+            position: relative;
+        }
+
+        .modern-table tbody tr {
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+            .modern-table tbody tr:hover {
+                background-color: #f8f9fa;
+                transform: scale(1.01);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+
+        .modern-table tbody td {
+            padding: 1.2rem 1rem;
+            border: none;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+
+    .table-name {
+        font-weight: 600;
+        color: #343a40;
+        font-size: 1.1rem;
+    }
+
+    .floor-badge {
+        background: linear-gradient(45deg, #17a2b8, #20c997);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-available {
+        background: linear-gradient(45deg, #28a745, #20c997);
+        color: white;
+    }
+
+    .status-occupied {
+        background: linear-gradient(45deg, #dc3545, #e74c3c);
+        color: white;
+    }
+
+    .status-reserved {
+        background: linear-gradient(45deg, #ffc107, #ff8c00);
+        color: white;
+    }
+
+    .status-maintenance {
+        background: linear-gradient(45deg, #6c757d, #495057);
+        color: white;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-edit {
+        background: linear-gradient(45deg, #ffc107, #ff8c00);
+        color: white;
+    }
+
+        .btn-edit:hover {
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+        }
+
+    .btn-delete {
+        background: linear-gradient(45deg, #dc3545, #e74c3c);
+        color: white;
+    }
+
+        .btn-delete:hover {
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        text-align: center;
+        transition: all 0.3s ease;
+        border-left: 4px solid;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-card.total {
+            border-left-color: #667eea;
+        }
+
+        .stat-card.available {
+            border-left-color: #28a745;
+        }
+
+        .stat-card.occupied {
+            border-left-color: #dc3545;
+        }
+
+        .stat-card.reserved {
+            border-left-color: #ffc107;
+        }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        color: #343a40;
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-weight: 500;
+        margin-top: 0.5rem;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6c757d;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .action-buttons {
+        justify-content: center;
+    }
+
+    .modern-table {
+        font-size: 0.9rem;
+    }
+
+        .modern-table thead th,
+        .modern-table tbody td {
+            padding: 0.8rem 0.5rem;
+        }
+
+    }
+</style>
+
+<div class="container-fluid mt-4">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1 class="page-title">🍽️ Quản Lý Bàn Ăn</h1>
+            <p class="page-subtitle">Hệ thống quản lý bàn ăn thông minh</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Statistics Cards -->
+        <div class="stats-container">
+            <div class="stat-card total">
+                <div class="stat-number">@Model.Count()</div>
+                <div class="stat-label">Tổng số bàn</div>
+            </div>
+            <div class="stat-card available">
+                <div class="stat-number">@Model.Count(x => x.TableStatus == "Trống")</div>
+                <div class="stat-label">Bàn trống</div>
+            </div>
+            <div class="stat-card occupied">
+                <div class="stat-number">@Model.Count(x => x.TableStatus == "Đang sử dụng")</div>
+                <div class="stat-label">Đang sử dụng</div>
+            </div>
+            <div class="stat-card reserved">
+                <div class="stat-number">@Model.Count(x => x.TableStatus == "Đã đặt")</div>
+                <div class="stat-label">Đã đặt trước</div>
+            </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <a class="btn-create" href="/Table/Create">
+                ➕ Thêm bàn mới
+            </a>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Tìm kiếm bàn..." id="searchInput">
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+            @if (Model.Any())
+            {
+                <table class="table modern-table" id="tablesTable">
+                    <thead>
+                        <tr>
+                            <th>🏷️ Tên bàn</th>
+                            <th>🏢 Tầng</th>
+                            <th>📊 Trạng thái</th>
+                            <th>⚙️ Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="table-name">@item.TableName</div>
+                                </td>
+                                <td>
+                                    <span class="floor-badge">@item.FloorName</span>
+                                </td>
+                                <td>
+                                    @{
+                                        var statusClass = item.TableStatus switch
+                                        {
+                                            "Trống" => "status-available",
+                                            "Đang sử dụng" => "status-occupied",
+                                            "Đã đặt" => "status-reserved",
+                                            _ => "status-maintenance"
+                                        };
+                                    }
+                                    <span class="status-badge @statusClass">@item.TableStatus</span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a class="btn-action btn-edit" href="/Table/Edit/@item.Id">
+                                            ✏️ Sửa
+                                        </a>
+                                        <a class="btn-action btn-delete" href="/Table/Delete/@item.Id"
+                                           onclick="return confirm('⚠️ Bạn có chắc chắn muốn xóa bàn này không?')">
+                                            🗑️ Xóa
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-state-icon">🍽️</div>
+                    <h3>Chưa có bàn nào</h3>
+                    <p>Hãy thêm bàn đầu tiên để bắt đầu quản lý</p>
+                    <a class="btn-create" href="/Table/Create">➕ Thêm bàn đầu tiên</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        const tableRows = document.querySelectorAll('#tablesTable tbody tr');
+
+        tableRows.forEach(row => {
+            const tableName = row.cells[0].textContent.toLowerCase();
+            const floorName = row.cells[1].textContent.toLowerCase();
+            const status = row.cells[2].textContent.toLowerCase();
+
+            if (tableName.includes(searchTerm) ||
+                floorName.includes(searchTerm) ||
+                status.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Add smooth scroll animation
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('.modern-table tbody tr');
+        rows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                row.style.transition = 'all 0.5s ease';
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>

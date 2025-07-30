@@ -1,0 +1,84 @@
+﻿@model List<BookingAdminViewModel>
+@{
+    ViewData["Title"] = "Quản lý đặt bàn";
+	Layout = "_AdminLayout";
+}
+
+<h2>Quản lý đặt bàn</h2>
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Khách hàng</th>
+            <th>Bàn</th>
+            <th>Ngày giờ</th>
+            <th>Khung giờ</th>
+            <th>Số người</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var b in Model)
+        {
+            <tr>
+                <td>@b.CustomerName</td>
+                <td>@b.TableName</td>
+                <td>@b.BookingDate.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@b.TimeSlot</td>
+                <td>@b.NumberOfPeople</td>
+                <td>
+                    @if (b.IsCancelled)
+                    {
+                        <span class="badge bg-danger">Đã hủy</span>
+                    }
+                    else if (b.IsCompleted)
+                    {
+                        <span class="badge bg-success">Đã xong</span>
+                    }
+                    else if (b.IsConfirmed)
+                    {
+                        <span class="badge bg-info text-dark">Đã xác nhận</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Đang chờ</span>
+                    }
+                </td>
+                <td>
+                    @if (!b.IsCancelled && !b.IsCompleted &&!b.IsConfirmed)
+                    {
+                        <form method="post" asp-action="CompleteBooking" style="display:inline">
+                            <input type="hidden" name="id" value="@b.Id" />
+                            <button class="btn btn-success btn-sm" onclick="return confirm('Xác nhận hoàn thành?')">Đã xong</button>
+                        </form>
+                        <form method="post" asp-action="ConfirmBooking" style="display:inline">
+                            <input type="hidden" name="id" value="@b.Id" />
+                            <button class="btn btn-success btn-sm" onclick="return confirm('Xác nhận đặt bàn?')">Xác nhận</button>
+                        </form>
+                        <form method="post" asp-action="CancelBooking" style="display:inline">
+                            <input type="hidden" name="id" value="@b.Id" />
+                            <button class="btn btn-danger btn-sm" onclick="return confirm('Bạn chắc chắn muốn hủy?')">Hủy</button>
+                        </form>
+                    }
+                    else if (b.IsCompleted)
+                    {
+                        <span class="text-success">Đã hoàn thành</span>
+                    }
+                    else if (b.IsConfirmed)
+                    {
+                        <form method="post" asp-action="CompleteBooking" style="display:inline">
+                            <input type="hidden" name="id" value="@b.Id" />
+                            <button class="btn btn-success btn-sm" onclick="return confirm('Xác nhận hoàn thành?')">Đã xong</button>
+                        </form>
+                        <span class="text-danger">Đã xác nhận</span>
+                        
+                    }
+                    else if (b.IsCancelled)
+                    {
+                        <span class="text-danger">Đã hủy</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

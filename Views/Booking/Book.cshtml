@@ -1,0 +1,57 @@
+﻿@model BookingViewModel
+@{
+    ViewData["Title"] = "Đặt bàn";
+}
+<link rel="stylesheet" href="~/css/book.css" asp-append-version="true" />
+
+
+<div class="booking-container">
+    <div class="floating-elements">
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+    </div>
+
+    <div class="booking-card">
+        <div class="restaurant-icon">
+            🍽️
+        </div>
+
+        <div class="booking-title">
+            <h2>Đặt Bàn Nhà Hàng</h2>
+        </div>
+
+        <form asp-action="Book" method="post">
+            <div class="form-group">
+                <label class="form-label">Số người</label>
+                <input type="number" name="NumberOfPeople" class="form-control" required min="1" max="20" placeholder="Nhập số lượng khách" />
+                <div class="input-icon">👥</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Chọn bàn</label>
+                <select asp-for="TableId" asp-items="Model.Tables" class="form-select">
+                    <option value="">-- Chọn bàn phù hợp --</option>
+                </select>
+                <div class="input-icon">🪑</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Khung giờ</label>
+                <select asp-for="TimeSlot" asp-items="Model.TimeSlots" class="form-select">
+                    <option value="">-- Chọn thời gian --</option>
+                </select>
+                <div class="input-icon">⏰</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                ✨ Đặt Bàn Ngay
+            </button>
+        </form>
+
+        <a href="/Booking/History" class="history-link">
+            📋 Xem Lịch Sử Đặt Bàn
+        </a>
+    </div>
+</div>
+<script src="/js/book.js"></script>

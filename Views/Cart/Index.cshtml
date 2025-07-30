@@ -1,0 +1,489 @@
+﻿
+@model List<CartItemViewModel>
+@{
+    ViewData["Title"] = "Giỏ hàng của bạn";
+}
+<link rel="stylesheet" href="~/css/cart.css" asp-append-version="true" />
+<style>
+    .cart-container {
+        background: linear-gradient(135deg, #FFBD71 0%, #FFDCA2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .cart-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+        animation: slideUp 0.6s ease-out;
+    }
+
+    .cart-header {
+        background: linear-gradient(135deg, #EEB462 0%, #CD7672 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .cart-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+    .cart-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        position: relative;
+        z-index: 1;
+    }
+
+    .cart-subtitle {
+        margin-top: 0.5rem;
+        opacity: 0.9;
+        font-size: 1.1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .empty-cart {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6c757d;
+    }
+
+    .empty-cart-icon {
+        font-size: 4rem;
+        color: #dee2e6;
+        margin-bottom: 1rem;
+    }
+
+    .cart-table {
+        margin: 0;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+        .cart-table thead {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
+        }
+
+        .cart-table th {
+            padding: 1.5rem 1rem;
+            font-weight: 600;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+    .cart-item-row {
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+        .cart-item-row:hover {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-item-row td {
+            padding: 1.5rem 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+    .food-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 15px;
+        object-fit: cover;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+    }
+
+        .food-image:hover {
+            transform: scale(1.1);
+        }
+
+    .food-name {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.1rem;
+    }
+
+    .food-price {
+        font-weight: 700;
+        color: #e74c3c;
+        font-size: 1.1rem;
+    }
+
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .qty-btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        border: 2px solid #3498db;
+        background: white;
+        color: #3498db;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .qty-btn:hover {
+            background: #3498db;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+    .quantity-display {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        min-width: 50px;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+    }
+
+    .total-amount {
+        font-weight: 700;
+        color: #27ae60;
+        font-size: 1.2rem;
+    }
+
+    .delete-btn {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 10px rgba(231, 76, 60, 0.3);
+    }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+    .checkout-section {
+        padding: 2rem;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-top: 3px solid #3498db;
+    }
+
+    .checkout-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .checkout-btn {
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-order {
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+        color: white;
+        box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+    }
+
+        .btn-order:hover {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.5);
+            color: white;
+        }
+
+    .btn-table {
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+        color: white;
+        box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+    }
+
+        .btn-table:hover {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(243, 156, 18, 0.5);
+            color: white;
+        }
+
+    .loading-spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+
+    .success-message {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        display: none;
+    }
+
+    .error-message {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        display: none;
+    }
+
+</style>
+
+<div class="cart-container mt-5 pt-5">
+    <div class="container">
+        <div class="cart-card">
+            <div class="cart-header">
+                <h1 class="cart-title">🛒 Giỏ Hàng</h1>
+                <p class="cart-subtitle">Quản lý món ăn yêu thích của bạn</p>
+            </div>
+
+            <div class="success-message" id="success-message"></div>
+            <div class="error-message" id="error-message"></div>
+
+            @if (!Model.Any())
+            {
+                <div class="empty-cart">
+                    <div class="empty-cart-icon">🛍️</div>
+                    <h3>Giỏ hàng trống</h3>
+                    <p>Hãy thêm một số món ăn ngon vào giỏ hàng của bạn!</p>
+                    <a href="/home/menu" class="checkout-btn btn-order mt-3">
+                        🍽️ Xem thực đơn
+                    </a>
+                </div>
+            }
+            else
+            {
+                <form id="cart-form">
+                    @Html.AntiForgeryToken()
+                    <div class="table-responsive">
+                        <table class="table cart-table">
+                            <thead>
+                                <tr>
+                                    <th>📸 Ảnh</th>
+                                    <th>🍽️ Tên món</th>
+                                    <th>💰 Giá</th>
+                                    <th>📊 Số lượng</th>
+                                    <th>💵 Tổng tiền</th>
+                                    <th>⚡ Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cart-body">
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="cart-item-row" data-id="@item.Id">
+                                        <td>
+                                            <img src="@item.ImageUrl" alt="@item.FoodName" class="food-image" />
+                                        </td>
+                                        <td>
+                                            <div class="food-name">@item.FoodName</div>
+                                        </td>
+                                        <td>
+                                            <div class="food-price">@item.Price.ToString("N0") đ</div>
+                                        </td>
+                                        <td>
+                                            <div class="quantity-controls">
+                                                <button type="button" class="qty-btn update-qty" data-action="decrease">
+                                                    <span>−</span>
+                                                    <div class="loading-spinner"></div>
+                                                </button>
+                                                <span class="quantity-display quantity">@item.Quantity</span>
+                                                <button type="button" class="qty-btn update-qty" data-action="increase">
+                                                    <span>+</span>
+                                                    <div class="loading-spinner"></div>
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="total-amount total">@item.TotalAmount.ToString("N0") đ</div>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="delete-btn btn-delete" data-id="@item.Id">
+                                                🗑️ Xóa
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="checkout-section">
+                        <div class="checkout-buttons">
+                            <a href="/checkout/checkoutorder" class="checkout-btn btn-order">
+                                🍽️ Đặt món ngay
+                            </a>
+                            <a href="/booking/book" class="checkout-btn btn-table">
+                                🪑 Đặt bàn
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Show message function
+            function showMessage(message, type) {
+                const messageDiv = type === 'success' ? '#success-message' : '#error-message';
+                $(messageDiv).text(message).fadeIn().delay(3000).fadeOut();
+            }
+
+            // Update quantity
+            $('.update-qty').click(function () {
+                var button = $(this);
+                var row = button.closest('tr');
+                var id = row.data('id');
+                var action = button.data('action');
+
+                // Show loading
+                button.find('span').hide();
+                button.find('.loading-spinner').show();
+                button.prop('disabled', true);
+
+                $.ajax({
+                    url: '/cart/updatequantity',
+                    type: 'POST',
+                    data: {
+                        id: id,
+                        action: action
+                    },
+                    headers: {
+                        RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (res) {
+                        if (res.success) {
+                            row.find('.quantity').text(res.quantity);
+                            row.find('.total').text(res.totalAmountFormatted);
+                            showMessage('Cập nhật số lượng thành công!', 'success');
+
+                            // Add success animation
+                            row.addClass('table-success');
+                            setTimeout(() => row.removeClass('table-success'), 1000);
+                        } else {
+                            showMessage('Không thể cập nhật số lượng!', 'error');
+                        }
+                    },
+                    error: function (err) {
+                        showMessage('Lỗi khi cập nhật số lượng!', 'error');
+                        console.error(err);
+                    },
+                    complete: function() {
+                        // Hide loading
+                        button.find('span').show();
+                        button.find('.loading-spinner').hide();
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+
+            // Delete item
+            $('.btn-delete').click(function () {
+                // Custom confirm dialog
+                if (!confirm("🗑️ Bạn có chắc muốn xóa món này khỏi giỏ hàng?")) return;
+
+                var button = $(this);
+                var row = button.closest('tr');
+                var id = button.data('id');
+
+                // Add loading state
+                button.html('⏳ Đang xóa...');
+                button.prop('disabled', true);
+
+                $.ajax({
+                    url: '/cart/delete',
+                    type: 'POST',
+                    data: { id: id },
+                    headers: {
+                        RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (res) {
+                        if (res.success) {
+                            // Smooth remove animation
+                            row.fadeOut(500, function() {
+                                $(this).remove();
+
+                                // Check if cart is empty
+                                if ($('#cart-body tr').length === 0) {
+                                    location.reload();
+                                }
+                            });
+                            showMessage('Đã xóa món khỏi giỏ hàng!', 'success');
+                        } else {
+                            showMessage('Xóa không thành công!', 'error');
+                            button.html('🗑️ Xóa');
+                            button.prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        showMessage('Lỗi khi xóa món!', 'error');
+                        button.html('🗑️ Xóa');
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+
+            // Add smooth scroll to checkout buttons
+            $('.checkout-btn').click(function(e) {
+                $(this).addClass('loading');
+                setTimeout(() => {
+                    $(this).removeClass('loading');
+                }, 500);
+            });
+        });
+    </script>
+}

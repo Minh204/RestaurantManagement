@@ -1,0 +1,979 @@
+﻿@model CheckoutViewModel
+@{
+    ViewData["Title"] = "Đặt hàng - Dola Restaurant";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Checkout.css" asp-append-version="true" />
+    <style>
+        :root {
+            --primary-color: #ff6b35;
+            --primary-dark: #e55a2b;
+            --secondary-color: #f7931e;
+            --accent-color: #2c3e50;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --bg-light: #fafbfc;
+            --bg-white: #ffffff;
+            --border-color: #e8ecef;
+            --success-color: #27ae60;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,.08);
+            --shadow-md: 0 4px 20px rgba(0,0,0,.12);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,.16);
+            --border-radius: 16px;
+            --border-radius-sm: 12px;
+            --border-radius-lg: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        .header-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .header-section::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,100 1000,0 1000,100"/></svg>');
+                background-size: cover;
+            }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 8px;
+            font-weight: 400;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            padding: 0 20px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-white);
+            border: 3px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-light);
+            z-index: 2;
+            transition: var(--transition);
+        }
+
+        .step.active .step-circle {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step-label {
+            margin-left: 12px;
+            font-weight: 500;
+            color: var(--text-light);
+            white-space: nowrap;
+        }
+
+        .step.active .step-label {
+            color: var(--primary-color);
+        }
+
+        .step-connector {
+            width: 80px;
+            height: 3px;
+            background: var(--border-color);
+            margin: 0 20px;
+        }
+
+        .step.active + .step .step-connector {
+            background: var(--primary-color);
+        }
+
+        /* Card Styles */
+        .main-card {
+            background: var(--bg-white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            padding: 16px 20px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--bg-white);
+            width: 100%;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+                outline: none;
+            }
+
+            .form-control[readonly] {
+                background-color: #f8f9fa;
+                cursor: not-allowed;
+            }
+
+        /* Payment Method Styles */
+        .payment-method {
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            padding: 20px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-white);
+        }
+
+            .payment-method:hover {
+                border-color: var(--primary-color);
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-md);
+            }
+
+            .payment-method.selected {
+                border-color: var(--primary-color);
+                background: rgba(255, 107, 53, 0.05);
+                box-shadow: var(--shadow-md);
+            }
+
+        .payment-method-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .payment-method-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .payment-method-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .payment-method-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .payment-method input[type="radio"] {
+            margin-left: auto;
+            transform: scale(1.3);
+            accent-color: var(--primary-color);
+        }
+
+        /* QR Code Styles */
+        .qr-payment-details {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--border-color);
+        }
+
+            .qr-payment-details.show {
+                display: block;
+                animation: slideDown 0.3s ease-out;
+            }
+
+
+        .qr-code-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .qr-code-image {
+            max-width: 200px;
+            width: 100%;
+            height: auto;
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 16px;
+        }
+
+        .qr-instructions {
+            background: var(--bg-white);
+            padding: 16px;
+            border-radius: var(--border-radius-sm);
+            border-left: 4px solid var(--primary-color);
+        }
+
+            .qr-instructions h6 {
+                color: var(--primary-color);
+                font-weight: 600;
+                margin-bottom: 8px;
+            }
+
+            .qr-instructions ol {
+                margin: 0;
+                padding-left: 20px;
+            }
+
+            .qr-instructions li {
+                margin-bottom: 4px;
+                color: var(--text-dark);
+            }
+
+        /* Cart Item Styles */
+        .cart-section {
+            background: var(--bg-white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .cart-item {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+        }
+
+            .cart-item:hover {
+                background-color: #fafbfc;
+            }
+
+            .cart-item:last-child {
+                border-bottom: none;
+            }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--border-radius-sm);
+            object-fit: cover;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .cart-item-details {
+            flex: 1;
+            margin-left: 20px;
+        }
+
+        .cart-item-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .cart-item-quantity {
+            display: inline-flex;
+            align-items: center;
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .cart-item-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* Summary Styles */
+        .order-summary {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+            .summary-row:last-child {
+                margin-bottom: 0;
+                padding-top: 20px;
+                border-top: 2px solid var(--border-color);
+                font-size: 1.3rem;
+                font-weight: 700;
+            }
+
+        .total-amount {
+            color: var(--primary-color);
+            font-size: 1.5rem !important;
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: var(--border-radius-sm);
+            padding: 18px 36px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn-primary::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                transition: left 0.5s;
+            }
+
+            .btn-primary:hover::before {
+                left: 100%;
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-lg);
+                background: linear-gradient(135deg, var(--primary-dark) 0%, #d44820 100%);
+            }
+
+            .btn-primary:active {
+                transform: translateY(0);
+            }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        /* Error Styles */
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px 16px;
+            border-radius: var(--border-radius-sm);
+            border: 1px solid #fcc;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Success Styles */
+        .success-badge {
+            background: var(--success-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header-section mt-5 pt-5">
+        <div class="main-container">
+            <div class="header-content text-center">
+                <h1 class="header-title">
+                    <i class="fas fa-utensils"></i>
+                    Dola Restaurant
+                </h1>
+                <p class="header-subtitle">Hoàn tất đặt hàng của bạn</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="main-container">
+        <div class="progress-steps">
+            <div class="step">
+                <div class="step-circle">1</div>
+                <span class="step-label">Giỏ hàng</span>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step active">
+                <div class="step-circle">
+                    <i class="fas fa-check"></i>
+                </div>
+                <span class="step-label">Thông tin giao hàng</span>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step">
+                <div class="step-circle">3</div>
+                <span class="step-label">Xác nhận</span>
+            </div>
+        </div>
+
+        <form asp-action="CheckoutOrder" method="post" id="checkoutForm">
+            <div class="row">
+                <!-- Customer Information Section -->
+                <div class="col-lg-7 mb-4">
+                    <div class="main-card fade-in">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-user-circle"></i>
+                                Thông tin khách hàng
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="email" class="form-label">
+                                            <i class="fas fa-envelope"></i> Email
+                                        </label>
+                                        <input type="email" name="Email" class="form-control" id="email"
+                                               value="@Model.Email" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="fullName" class="form-label">
+                                            <i class="fas fa-user"></i> Họ và tên
+                                        </label>
+                                        <input type="text" name="FullName" class="form-control" id="fullName"
+                                               value="@Model.FullName" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="phone" class="form-label">
+                                            <i class="fas fa-phone"></i> Số điện thoại
+                                        </label>
+                                        <input type="text" name="PhoneNumber" class="form-control" id="phone"
+                                               value="@Model.PhoneNumber" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="province" class="form-label">
+                                            <i class="fas fa-map-marker-alt"></i> Tỉnh/Thành phố
+                                        </label>
+                                        <select id="province" class="form-select" required>
+                                            <option value="">
+                                                <span class="loading-spinner"></span>
+                                                Đang tải...
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="ward" class="form-label">
+                                            <i class="fas fa-building"></i> Phường/Xã
+                                        </label>
+                                        <select id="ward" class="form-select" required>
+                                            <option value="">Chọn phường/xã</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="address" class="form-label">
+                                            <i class="fas fa-home"></i> Địa chỉ cụ thể
+                                        </label>
+                                        <input type="text" name="Address" id="address" class="form-control"
+                                               placeholder="Số nhà, tên đường..." required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="notes" class="form-label">
+                                    <i class="fas fa-sticky-note"></i> Ghi chú đặc biệt
+                                </label>
+                                <textarea name="Note" class="form-control" id="notes" rows="3"
+                                          placeholder="Ghi chú về đơn hàng (tùy chọn)..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method Section -->
+                    <div class="main-card fade-in">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-credit-card"></i>
+                                Phương thức thanh toán
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- Cash Payment -->
+                            <div class="payment-method" data-payment="cash">
+                                <div class="payment-method-header">
+                                    <div class="payment-method-icon" style="background-color: #27ae60; color: white;">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <h5 class="payment-method-title">Thanh toán tiền mặt</h5>
+                                        <p class="payment-method-description">Thanh toán khi nhận hàng (COD)</p>
+                                    </div>
+                                    <input type="radio" name="PaymentMethod" value="cash" checked>
+                                </div>
+                            </div>
+
+                            <!-- QR Payment -->
+                            <div class="payment-method" data-payment="qr">
+                                <div class="payment-method-header">
+                                    <div class="payment-method-icon" style="background-color: #3498db; color: white;">
+                                        <i class="fas fa-qrcode"></i>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <h5 class="payment-method-title">Chuyển khoản QR</h5>
+                                        <p class="payment-method-description">Quét mã QR để thanh toán ngay</p>
+                                    </div>
+                                    <input type="radio" name="PaymentMethod" value="qr">
+                                </div>
+
+                                <!-- QR Payment Details -->
+                                <div class="qr-payment-details" id="qrPaymentDetails">
+                                    <div class="qr-code-container">
+                                        <img src="https://img.vietqr.io/image/vietinbank-113366668888-compact.jpg"
+                                             alt="QR Code Thanh Toán" class="qr-code-image">
+                                        <div style="margin-top: 12px;">
+                                            <strong style="color: var(--primary-color); font-size: 1.1rem;">
+                                                Số tiền: @Model.TotalAmount.ToString("N0")₫
+                                            </strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="qr-instructions">
+                                        <h6><i class="fas fa-info-circle"></i> Hướng dẫn thanh toán:</h6>
+                                        <ol>
+                                            <li>Mở ứng dụng ngân hàng trên điện thoại</li>
+                                            <li>Chọn "Quét QR" hoặc "Chuyển khoản QR"</li>
+                                            <li>Quét mã QR ở trên</li>
+                                            <li>Kiểm tra số tiền và xác nhận chuyển khoản</li>
+                                            <li>Chụp ảnh bill chuyển khoản để đối chiếu</li>
+                                        </ol>
+                                        <div style="margin-top: 12px; padding: 8px; background-color: #fff3cd; border-radius: 6px; border-left: 3px solid #ffc107;">
+                                            <small style="color: #856404;">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                                <strong>Lưu ý:</strong> Sau khi chuyển khoản thành công, vui lòng nhấn "Xác nhận đặt hàng" để hoàn tất.
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bank Transfer -->
+                            <div class="payment-method" data-payment="bank">
+                                <div class="payment-method-header">
+                                    <div class="payment-method-icon" style="background-color: #e74c3c; color: white;">
+                                        <i class="fas fa-university"></i>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <h5 class="payment-method-title">Chuyển khoản ngân hàng</h5>
+                                        <p class="payment-method-description">Chuyển khoản trực tiếp qua số tài khoản</p>
+                                    </div>
+                                    <input type="radio" name="PaymentMethod" value="bank">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary Section -->
+                <div class="col-lg-5 mb-4">
+                    <div class="cart-section slide-up">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-shopping-cart"></i>
+                                Đơn hàng của bạn
+                                <span class="success-badge">@Model.CartItems.Count món</span>
+                            </h3>
+                        </div>
+
+                        <!-- Cart Items -->
+                        @foreach (var item in Model.CartItems)
+                        {
+                            <div class="cart-item">
+                                <div class="d-flex align-items-center">
+                                    <img src="@item.ImageUrl" alt="@item.FoodName" class="cart-item-image">
+                                    <div class="cart-item-details">
+                                        <h6 class="cart-item-name">@item.FoodName</h6>
+                                        <div class="d-flex align-items-center">
+                                            <span class="cart-item-quantity">
+                                                <i class="fas fa-times"></i> @item.Quantity
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="cart-item-price">
+                                        @item.TotalAmount.ToString("N0")₫
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Order Summary -->
+                        <div class="order-summary">
+                            <div class="summary-row">
+                                <span>Tạm tính:</span>
+                                <span>@Model.TotalAmount.ToString("N0")₫</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Phí giao hàng:</span>
+                                <span class="text-success">Miễn phí</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Tổng cộng:</span>
+                                <span class="total-amount">@Model.TotalAmount.ToString("N0")₫</span>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="p-4">
+                            <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+                                <i class="fas fa-credit-card me-2"></i>
+                                XÁC NHẬN ĐẶT HÀNG
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let provinces = [];
+        let isSubmitting = false;
+
+        $(document).ready(function () {
+            // Load provinces with better error handling
+            loadProvinces();
+
+            // Province change handler
+            $('#province').change(function () {
+                loadWards($(this).val());
+            });
+
+            // Payment method selection handler
+            $('.payment-method').click(function () {
+                const paymentType = $(this).data('payment');
+
+                // Remove selected class from all payment methods
+                $('.payment-method').removeClass('selected');
+
+                // Add selected class to clicked method
+                $(this).addClass('selected');
+
+                // Check the radio button
+                $(this).find('input[type="radio"]').prop('checked', true);
+
+                // Show/hide QR details
+                if (paymentType === 'qr') {
+                    $('#qrPaymentDetails').addClass('show');
+                } else {
+                    $('#qrPaymentDetails').removeClass('show');
+                }
+
+                // Update submit button text based on payment method
+                updateSubmitButtonText(paymentType);
+            });
+
+            // Initialize default payment method
+            $('.payment-method[data-payment="cash"]').addClass('selected');
+
+            // Form submission handler
+            $('#checkoutForm').submit(function (e) {
+                if (isSubmitting) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                if (!validateForm()) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Show loading state
+                isSubmitting = true;
+                const submitBtn = $('#submitBtn');
+                submitBtn.prop('disabled', true);
+                submitBtn.html('<span class="loading-spinner"></span>Đang xử lý...');
+
+                // Combine address parts
+                const province = $('#province').val();
+                const ward = $('#ward').val();
+                const detail = $('#address').val();
+                const fullAddress = `${detail}, ${ward}, ${province}`;
+                $('#address').val(fullAddress);
+            });
+
+            // Add animation delays
+            setTimeout(() => {
+                $('.slide-up').addClass('slide-up');
+            }, 200);
+        });
+
+        function updateSubmitButtonText(paymentType) {
+            const submitBtn = $('#submitBtn');
+            const iconMap = {
+                'cash': 'fas fa-money-bill-wave',
+                'qr': 'fas fa-qrcode',
+                'bank': 'fas fa-university'
+            };
+
+            const textMap = {
+                'cash': 'XÁC NHẬN ĐẶT HÀNG',
+                'qr': 'XÁC NHẬN & THANH TOÁN QR',
+                'bank': 'XÁC NHẬN & CHUYỂN KHOẢN'
+            };
+
+            const icon = iconMap[paymentType] || 'fas fa-credit-card';
+            const text = textMap[paymentType] || 'XÁC NHẬN ĐẶT HÀNG';
+
+            submitBtn.html(`<i class="${icon} me-2"></i>${text}`);
+        }
+
+        function loadProvinces() {
+            $.get('https://vietnamlabs.com/api/vietnamprovince')
+                .done(function (res) {
+                    if (res.success && Array.isArray(res.data)) {
+                        provinces = res.data;
+                        const options = '<option value="">Chọn tỉnh/thành phố</option>' +
+                                       res.data.map(p => `<option value="${p.province}">${p.province}</option>`).join('');
+                        $('#province').html(options);
+                    } else {
+                        throw new Error('Invalid response format');
+                    }
+                })
+                .fail(function () {
+                    $('#province').html('<option value="">❌ Không thể tải danh sách tỉnh</option>');
+                    showError('Không thể tải danh sách tỉnh/thành phố. Vui lòng thử lại.');
+                });
+        }
+
+        function loadWards(selectedProvince) {
+            const wardSelect = $('#ward');
+            wardSelect.html('<option value="">Đang tải...</option>');
+
+            if (!selectedProvince) {
+                wardSelect.html('<option value="">Chọn phường/xã</option>');
+                return;
+            }
+
+            const provinceObj = provinces.find(p => p.province === selectedProvince);
+
+            if (provinceObj && Array.isArray(provinceObj.wards)) {
+                const options = '<option value="">Chọn phường/xã</option>' +
+                               provinceObj.wards.map(w => `<option value="${w.name}">${w.name}</option>`).join('');
+                wardSelect.html(options);
+            } else {
+                wardSelect.html('<option value="">❌ Không có dữ liệu phường/xã</option>');
+            }
+        }
+
+        function validateForm() {
+            const province = $('#province').val();
+            const ward = $('#ward').val();
+            const address = $('#address').val().trim();
+            const paymentMethod = $('input[name="PaymentMethod"]:checked').val();
+
+            if (!province) {
+                showError('Vui lòng chọn tỉnh/thành phố');
+                $('#province').focus();
+                return false;
+            }
+
+            if (!ward) {
+                showError('Vui lòng chọn phường/xã');
+                $('#ward').focus();
+                return false;
+            }
+
+            if (!address) {
+                showError('Vui lòng nhập địa chỉ cụ thể');
+                $('#address').focus();
+                return false;
+            }
+
+            if (!paymentMethod) {
+                showError('Vui lòng chọn phương thức thanh toán');
+                return false;
+            }
+
+            // Special validation for QR payment
+            if (paymentMethod === 'qr') {
+                const confirmed = confirm('Bạn đã hoàn tất việc chuyển khoản qua QR code chưa?\n\nNhấn "OK" nếu đã chuyển khoản thành công.\nNhấn "Cancel" để kiểm tra lại.');
+                if (!confirmed) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function showError(message) {
+            // Remove existing error messages
+            $('.error-message').remove();
+
+            // Add new error message
+            const errorDiv = `<div class="error-message">${message}</div>`;
+            $('.card-body').first().prepend(errorDiv);
+
+            // Scroll to error
+            $('html, body').animate({
+                scrollTop: $('.error-message').offset().top - 100
+            }, 500);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                $('.error-message').fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }, 5000);
+        }
+
+        // Add smooth scrolling for better UX
+        $('a[href^="#"]').on('click', function(event) {
+            var target = $(this.getAttribute('href'));
+            if( target.length ) {
+                event.preventDefault();
+                $('html, body').stop().animate({
+                    scrollTop: target.offset().top - 100
+                }, 1000);
+            }
+        });
+
+        // Add click effect for payment methods
+        $('.payment-method').on('mousedown', function() {
+            $(this).css('transform', 'scale(0.98)');
+        }).on('mouseup mouseleave', function() {
+            $(this).css('transform', 'scale(1)');
+        });
+    </script>
+</body>
+</html>

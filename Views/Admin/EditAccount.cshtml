@@ -1,0 +1,50 @@
+﻿@model RestaurantManagement.Models.EditAccountModel
+@{
+    ViewData["Title"] = "Sửa tài khoản";
+    var roles = ViewBag.RoleList as SelectList;
+    Layout = "_AdminLayout";
+}
+
+<div class="container mt-4">
+
+    <form asp-action="EditAccount" method="post" class="w-50">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label asp-for="UserName" class="form-label"></label>
+            <input asp-for="UserName" class="form-control" disabled />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label"></label>
+            <input asp-for="FullName" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Phone" class="form-label"></label>
+            <input asp-for="Phone" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="RoleId" class="form-label">Quyền</label>
+            <select asp-for="RoleId" class="form-select" asp-items="roles"></select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="NewPassword" class="form-label"></label>
+            <input asp-for="NewPassword" class="form-control" />
+            <small class="text-muted">Để trống nếu không đổi mật khẩu</small>
+        </div>
+
+        <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+        <a asp-action="ManageAccount" class="btn btn-secondary ms-2">Quay lại</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
