@@ -1,84 +1,261 @@
 ﻿@model List<BookingAdminViewModel>
 @{
     ViewData["Title"] = "Quản lý đặt bàn";
-	Layout = "_AdminLayout";
+    Layout = "_AdminLayout";
 }
+<link rel="stylesheet" href="~/css/booking.css" asp-append-version="true" />
+<div class="booking-header">
+    <div class="container">
+        <h1 class="booking-title">🍽️ Quản lý đặt bàn</h1>
+    </div>
+</div>
 
-<h2>Quản lý đặt bàn</h2>
-<table class="table table-bordered table-hover">
-    <thead class="table-dark">
-        <tr>
-            <th>Khách hàng</th>
-            <th>Bàn</th>
-            <th>Ngày giờ</th>
-            <th>Khung giờ</th>
-            <th>Số người</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var b in Model)
+<div class="container-fluid fade-in">
+    <!-- Statistics Row -->
+    <div class="row stats-row">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number text-warning">@Model.Count(b => !b.IsConfirmed && !b.IsCancelled && !b.IsCompleted)</div>
+                <div class="stat-label">Đang chờ</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number text-info">@Model.Count(b => b.IsConfirmed && !b.IsCompleted)</div>
+                <div class="stat-label">Đã xác nhận</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number text-success">@Model.Count(b => b.IsCompleted)</div>
+                <div class="stat-label">Đã hoàn thành</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-card">
+                <div class="stat-number text-danger">@Model.Count(b => b.IsCancelled)</div>
+                <div class="stat-label">Đã hủy</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Table -->
+    <div class="table-container">
+        <div class="table-header">
+            <h4>📋 Danh sách đặt bàn</h4>
+            <div class="search-filter-row">
+                <input type="text" class="search-input" placeholder="🔍 Tìm kiếm khách hàng, bàn..." id="searchInput">
+                <select class="filter-select" id="statusFilter">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="pending">Đang chờ</option>
+                    <option value="confirmed">Đã xác nhận</option>
+                    <option value="completed">Đã hoàn thành</option>
+                    <option value="cancelled">Đã hủy</option>
+                </select>
+            </div>
+        </div>
+
+        @if (Model.Any())
         {
-            <tr>
-                <td>@b.CustomerName</td>
-                <td>@b.TableName</td>
-                <td>@b.BookingDate.ToString("dd/MM/yyyy HH:mm")</td>
-                <td>@b.TimeSlot</td>
-                <td>@b.NumberOfPeople</td>
-                <td>
-                    @if (b.IsCancelled)
-                    {
-                        <span class="badge bg-danger">Đã hủy</span>
-                    }
-                    else if (b.IsCompleted)
-                    {
-                        <span class="badge bg-success">Đã xong</span>
-                    }
-                    else if (b.IsConfirmed)
-                    {
-                        <span class="badge bg-info text-dark">Đã xác nhận</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-warning text-dark">Đang chờ</span>
-                    }
-                </td>
-                <td>
-                    @if (!b.IsCancelled && !b.IsCompleted &&!b.IsConfirmed)
-                    {
-                        <form method="post" asp-action="CompleteBooking" style="display:inline">
-                            <input type="hidden" name="id" value="@b.Id" />
-                            <button class="btn btn-success btn-sm" onclick="return confirm('Xác nhận hoàn thành?')">Đã xong</button>
-                        </form>
-                        <form method="post" asp-action="ConfirmBooking" style="display:inline">
-                            <input type="hidden" name="id" value="@b.Id" />
-                            <button class="btn btn-success btn-sm" onclick="return confirm('Xác nhận đặt bàn?')">Xác nhận</button>
-                        </form>
-                        <form method="post" asp-action="CancelBooking" style="display:inline">
-                            <input type="hidden" name="id" value="@b.Id" />
-                            <button class="btn btn-danger btn-sm" onclick="return confirm('Bạn chắc chắn muốn hủy?')">Hủy</button>
-                        </form>
-                    }
-                    else if (b.IsCompleted)
-                    {
-                        <span class="text-success">Đã hoàn thành</span>
-                    }
-                    else if (b.IsConfirmed)
-                    {
-                        <form method="post" asp-action="CompleteBooking" style="display:inline">
-                            <input type="hidden" name="id" value="@b.Id" />
-                            <button class="btn btn-success btn-sm" onclick="return confirm('Xác nhận hoàn thành?')">Đã xong</button>
-                        </form>
-                        <span class="text-danger">Đã xác nhận</span>
-                        
-                    }
-                    else if (b.IsCancelled)
-                    {
-                        <span class="text-danger">Đã hủy</span>
-                    }
-                </td>
-            </tr>
+            <div class="table-responsive">
+                <table class="table modern-table" id="bookingTable">
+                    <thead>
+                        <tr>
+                            <th>👤 Người đặt</th>
+                            <th>🪑 Bàn</th>
+                            <th>📅 Ngày giờ</th>
+                            <th>⏰ Khung giờ</th>
+                            <th>👥 Số người</th>
+                            <th>📊 Trạng thái</th>
+                            <th>⚡ Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var b in Model)
+                        {
+                            <tr data-status="@(b.IsCancelled ? "cancelled" : b.IsCompleted ? "completed" : b.IsConfirmed ? "confirmed" : "pending")">
+                                <td>
+                                    <div class="customer-info">@b.CustomerName</div>
+                                </td>
+                                <td>
+                                    <span class="table-info">@b.TableName</span>
+                                </td>
+                                <td>
+                                    <div class="datetime-info">
+                                        <span class="datetime-date">@b.BookingDate.ToString("dd/MM/yyyy")</span>
+                                        <span class="datetime-time">@b.BookingDate.ToString("HH:mm")</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>@b.TimeSlot</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@b.NumberOfPeople người</span>
+                                </td>
+                                <td>
+                                    @if (b.IsCancelled)
+                                    {
+                                        <span class="status-badge status-cancelled">❌ Đã hủy</span>
+                                    }
+                                    else if (b.IsCompleted)
+                                    {
+                                        <span class="status-badge status-completed">✅ Đã xong</span>
+                                    }
+                                    else if (b.IsConfirmed)
+                                    {
+                                        <span class="status-badge status-confirmed">✔️ Đã xác nhận</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-pending">⏳ Đang chờ</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        @if (!b.IsCancelled && !b.IsCompleted && !b.IsConfirmed)
+                                        {
+                                            <form method="post" asp-action="ConfirmBooking" style="display:inline">
+                                                <input type="hidden" name="id" value="@b.Id" />
+                                                <button class="modern-btn btn-confirm" onclick="return confirm('Xác nhận đặt bàn này?')">
+                                                    ✔️ Xác nhận
+                                                </button>
+                                            </form>
+                                            <form method="post" asp-action="CompleteBooking" style="display:inline">
+                                                <input type="hidden" name="id" value="@b.Id" />
+                                                <button class="modern-btn btn-complete" onclick="return confirm('Đánh dấu hoàn thành?')">
+                                                    ✅ Hoàn thành
+                                                </button>
+                                            </form>
+                                            <form method="post" asp-action="CancelBooking" style="display:inline">
+                                                <input type="hidden" name="id" value="@b.Id" />
+                                                <button class="modern-btn btn-cancel" onclick="return confirm('Bạn chắc chắn muốn hủy đặt bàn này?')">
+                                                    ❌ Hủy
+                                                </button>
+                                            </form>
+                                        }
+                                        else if (b.IsConfirmed && !b.IsCompleted)
+                                        {
+                                            <form method="post" asp-action="CompleteBooking" style="display:inline">
+                                                <input type="hidden" name="id" value="@b.Id" />
+                                                <button class="modern-btn btn-complete" onclick="return confirm('Đánh dấu hoàn thành?')">
+                                                    ✅ Hoàn thành
+                                                </button>
+                                            </form>
+                                            <span class="status-text text-info">Đã xác nhận</span>
+                                        }
+                                        else if (b.IsCompleted)
+                                        {
+                                            <span class="status-text text-success">✅ Đã hoàn thành</span>
+                                        }
+                                        else if (b.IsCancelled)
+                                        {
+                                            <span class="status-text text-danger">❌ Đã hủy</span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
-    </tbody>
-</table>
+        else
+        {
+            <div class="empty-state">
+                <i class="fas fa-calendar-times"></i>
+                <h4>Chưa có đặt bàn nào</h4>
+                <p>Danh sách đặt bàn sẽ xuất hiện ở đây khi có khách hàng đặt bàn.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    // Search and Filter functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const table = document.getElementById('bookingTable');
+        const rows = table ? table.getElementsByTagName('tr') : [];
+
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const statusValue = statusFilter.value;
+
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const customerName = row.cells[0].textContent.toLowerCase();
+                const tableName = row.cells[1].textContent.toLowerCase();
+                const rowStatus = row.getAttribute('data-status');
+
+                const matchesSearch = customerName.includes(searchTerm) || tableName.includes(searchTerm);
+                const matchesStatus = !statusValue || rowStatus === statusValue;
+
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = '';
+                    row.style.animation = 'fadeIn 0.3s ease-in';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', filterTable);
+        }
+
+        if (statusFilter) {
+            statusFilter.addEventListener('change', filterTable);
+        }
+
+        // Enhanced confirm dialogs
+        const confirmButtons = document.querySelectorAll('[onclick*="confirm"]');
+        confirmButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const message = this.getAttribute('onclick').match(/confirm\('([^']+)'\)/)[1];
+
+                if (confirm(`🤔 ${message}\n\nHành động này không thể hoàn tác.`)) {
+                    this.closest('form').submit();
+                }
+            });
+        });
+
+        // Add loading state to buttons
+        const forms = document.querySelectorAll('form[method="post"]');
+        forms.forEach(form => {
+            form.addEventListener('submit', function() {
+                const button = this.querySelector('button[type="submit"], button:not([type])');
+                if (button) {
+                    button.disabled = true;
+                    button.innerHTML = '⏳ Đang xử lý...';
+                }
+            });
+        });
+    });
+
+    // Add smooth scrolling and better UX
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add ripple effect to buttons
+        document.querySelectorAll('.modern-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.classList.add('ripple');
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    });
+</script>

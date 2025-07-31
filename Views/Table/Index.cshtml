@@ -321,15 +321,11 @@
                 <div class="stat-label">Tổng số bàn</div>
             </div>
             <div class="stat-card available">
-                <div class="stat-number">@Model.Count(x => x.TableStatus == "Trống")</div>
+                <div class="stat-number">@Model.Count(x => x.TableStatus == "Empty")</div>
                 <div class="stat-label">Bàn trống</div>
             </div>
-            <div class="stat-card occupied">
-                <div class="stat-number">@Model.Count(x => x.TableStatus == "Đang sử dụng")</div>
-                <div class="stat-label">Đang sử dụng</div>
-            </div>
             <div class="stat-card reserved">
-                <div class="stat-number">@Model.Count(x => x.TableStatus == "Đã đặt")</div>
+                <div class="stat-number">@Model.Count(x => x.TableStatus == "Occupied")</div>
                 <div class="stat-label">Đã đặt trước</div>
             </div>
         </div>

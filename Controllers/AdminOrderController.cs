@@ -59,6 +59,54 @@ namespace RestaurantManagement.Controllers
 
             return RedirectToAction("Index");
         }
+        public IActionResult Detail(int id)
+        {
+            var order = new OrderDetail();
+            using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                var cmd = new SqlCommand(@"
+                SELECT o.Id AS OrderId, a.FullName,a.Phone, a.Email, o.Addr, o.OrderDate, o.TotalAmount, o.Note, o.OrderStatus,
+	                    od.FoodName, od.ImageUrl, od.Quantity, (SELECT Price FROM Food WHERE FoodName = od.FoodName ) AS UnitPrice 
+                FROM	Orders o
+                JOIN	Account a ON o.AccountId = a.Id
+                JOIN	OrderDetail od ON od.OrderId = o.Id
+                WHERE	o.Id = @Id", conn);
+                cmd.Parameters.AddWithValue("@Id", id);
+                var reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    if (order.OrderId == 0) // Chỉ lấy thông tin đơn hàng một lần
+                    {
+                        order.OrderId = (int)reader["OrderId"];
+                        order.FullName = reader["FullName"].ToString();
+                        order.Phone = reader["Phone"].ToString();
+                        order.Email = reader["Email"].ToString();
+                        order.Addr = reader["Addr"].ToString();
+                        order.OrderDate = (DateTime)reader["OrderDate"];
+                        order.TotalAmount = (decimal)reader["TotalAmount"];
+                        order.Note = reader["Note"]?.ToString();
+                        order.OrderStatus = reader["OrderStatus"].ToString();
+                    }
+                    // Thêm món ăn vào danh sách
+                    if (order.Foods == null)
+                    {
+                        order.Foods = new List<CartItemViewModel>();
+                    }
+                    order.Foods.Add(new CartItemViewModel
+                    {
+                        
+                        FoodName = reader["FoodName"].ToString(),
+                        ImageUrl = reader["ImageUrl"]?.ToString() ?? "/images/no-image.png",
+                        Price = (decimal)reader["UnitPrice"],
+                        Quantity = (int)reader["Quantity"],
+                        TotalAmount = (decimal)reader["UnitPrice"] * (int)reader["Quantity"]
+                    });
+                }
+                reader.Close();
+            }
+            return View(order);
+        }
         [HttpGet]
         public IActionResult Export()
         {

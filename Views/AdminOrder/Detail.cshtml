@@ -1,0 +1,187 @@
+﻿@model OrderDetail
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+    Layout = "_AdminLayout";
+}
+
+<link rel="stylesheet" href="~/css/orderDetail.css" asp-append-version="true" />
+
+<div class="order-detail-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="mb-4">
+                    <a class="back-btn" href="/AdminOrder/Index">
+                        <i class="fas fa-arrow-left"></i>
+                        Quay lại danh sách
+                    </a>
+                </div>
+
+                <div class="main-card">
+                    <!-- Header Section -->
+                    <div class="header-section">
+                        <h1 class="order-title">Chi tiết đơn hàng</h1>
+                        <p class="order-id">Mã đơn: #@Model.OrderId</p>
+                    </div>
+
+                    <!-- Customer Info Grid -->
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="info-card-content">
+                                <div class="info-label">Khách hàng</div>
+                                <div class="info-value">@Model.FullName</div>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-card-content">
+                                <div class="info-label">Điện thoại</div>
+                                <div class="info-value">@Model.Phone</div>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-card-content">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">@Model.Email</div>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-card-content">
+                                <div class="info-label">Địa chỉ</div>
+                                <div class="info-value">@Model.Addr</div>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-card-content">
+                                <div class="info-label">Thời gian đặt</div>
+                                <div class="info-value">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-card-content">
+                                <div class="info-label">Tổng tiền</div>
+                                <div class="info-value">@Model.TotalAmount.ToString("N0") đ</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Foods Section -->
+                    <div class="foods-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-utensils"></i>
+                            Món ăn đã đặt
+                        </h3>
+
+                        <div class="table-responsive">
+                            <table class="table foods-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên món</th>
+                                        <th>Ảnh</th>
+                                        <th>Giá</th>
+                                        <th>Số lượng</th>
+                                        <th>Tổng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Foods)
+                                    {
+                                        <tr>
+                                            <td><strong>@item.FoodName</strong></td>
+                                            <td>
+                                                <img src="@item.ImageUrl" alt="@item.FoodName" class="food-image" />
+                                            </td>
+                                            <td class="price-text">@item.Price.ToString("N0") đ</td>
+                                            <td>
+                                                <span class="quantity-badge">@item.Quantity</span>
+                                            </td>
+                                            <td class="price-text">
+                                                <strong>@item.TotalAmount.ToString("N0") đ</strong>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot class="total-section">
+                                    @if (!string.IsNullOrEmpty(Model.Note))
+                                    {
+                                        <tr>
+                                            <td colspan="3"><strong>Ghi chú:</strong></td>
+                                            <td colspan="2">@Model.Note</td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td colspan="3"><strong>TỔNG TIỀN ĐơN HÀNG:</strong></td>
+                                        <td colspan="2">
+                                            <strong style="font-size: 1.3rem;">@Model.TotalAmount.ToString("N0") đ</strong>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Status Section -->
+                    <div class="status-section">
+                        <div class="status-card">
+                            <h4 style="margin-bottom: 1rem; color: #2c3e50;">Trạng thái đơn hàng</h4>
+                            @{
+                                var statusText = Model.OrderStatus switch
+                                {
+                                    "Pending" => "Chờ xử lý",
+                                    "Paid" => "Đã hoàn thành",
+                                    "Cancelled" => "Đã hủy",
+                                    _ => "Không rõ"
+                                };
+
+                                var statusClass = Model.OrderStatus switch
+                                {
+                                    "Pending" => "status-pending",
+                                    "Paid" => "status-paid",
+                                    "Cancelled" => "status-cancelled",
+                                    _ => "status-pending"
+                                };
+                            }
+                            <span class="status-badge @statusClass">@statusText</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<script>
+    // Add smooth animations
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate info cards
+        const infoCards = document.querySelectorAll('.info-card');
+        infoCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+
+        // Animate table rows
+        const tableRows = document.querySelectorAll('.foods-table tbody tr');
+        tableRows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(-20px)';
+            setTimeout(() => {
+                row.style.transition = 'all 0.4s ease';
+                row.style.opacity = '1';
+                row.style.transform = 'translateX(0)';
+            }, 500 + (index * 100));
+        });
+    });
+</script>

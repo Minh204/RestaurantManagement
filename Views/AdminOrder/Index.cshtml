@@ -1,73 +1,211 @@
 ﻿@model List<OrderAdminViewModel>
-
 @{
     ViewData["Title"] = "Quản lý đơn hàng";
     Layout = "_AdminLayout";
 }
+<link rel="stylesheet" href="~/css/adminOrderIndex.css" asp-append-version="true" />
 
-<h2>Danh sách đơn hàng</h2>
-<a class="btn btn-primary mb-3" href="/AdminOrder/Export">Xuất Excel</a>
-<table class="table table-bordered mt-4">
-    <thead class="table-dark">
-        <tr>
-            <th>Mã đơn</th>
-            <th>Người đặt</th>
-            <th>Địa chỉ</th>
-            <th>Thời gian</th>
-            <th>Tổng tiền</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var order in Model)
-        {
-            <tr>
-                <td>@order.OrderId</td>
-                <td>@order.FullName</td>
-                <td>@order.Addr</td>
-                <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-                <td>@order.TotalAmount.ToString("N0") đ</td>
-                <td>
-                    @{
-                        var statusText = order.OrderStatus switch
+<div class="order-management">
+    <div class="main-container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1 class="page-title">Quản Lý Đơn Hàng</h1>
+            <p class="page-subtitle">Theo dõi và quản lý tất cả đơn hàng của bạn</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-number">@Model.Count</div>
+                <div class="stat-label">Tổng đơn hàng</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">@Model.Count(o => o.OrderStatus == "Pending")</div>
+                <div class="stat-label">Chờ xử lý</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">@Model.Count(o => o.OrderStatus == "Paid")</div>
+                <div class="stat-label">Đã hoàn thành</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">@Model.Count(o => o.OrderStatus == "Cancelled")</div>
+                <div class="stat-label">Đã hủy</div>
+            </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Tìm kiếm đơn hàng..." id="searchInput">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <a class="btn-export" href="/AdminOrder/Export">
+                <i class="fas fa-file-excel"></i>
+                Xuất Excel
+            </a>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="orders-table-container">
+            @if (Model.Any())
+            {
+                <table class="orders-table" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Thời gian</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
                         {
-                            "Pending" => "Chờ xử lý",
-                            "Paid" => "Đã hoàn thành",
-                            "Cancelled" => "Đã hủy",
-                            _ => "Không rõ"
-                        };
-                    }
-                    <span>@statusText</span>
-                </td>
+                            <tr>
+                                <td>
+                                    <span class="order-id">#@order.OrderId</span>
+                                </td>
+                                <td>
+                                    <div class="customer-info">
+                                        <div class="customer-name">@order.FullName</div>
+                                        <div class="customer-address" title="@order.Addr">@order.Addr</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="order-date">@order.OrderDate.ToString("dd/MM/yyyy")</div>
+                                    <div class="order-date">@order.OrderDate.ToString("HH:mm")</div>
+                                </td>
+                                <td>
+                                    <div class="total-amount">@order.TotalAmount.ToString("N0") đ</div>
+                                </td>
+                                <td>
+                                    @{
+                                        var statusText = order.OrderStatus switch
+                                        {
+                                            "Pending" => "Chờ xử lý",
+                                            "Paid" => "Đã hoàn thành",
+                                            "Cancelled" => "Đã hủy",
+                                            _ => "Không rõ"
+                                        };
+                                        var statusClass = order.OrderStatus switch
+                                        {
+                                            "Pending" => "status-pending",
+                                            "Paid" => "status-paid",
+                                            "Cancelled" => "status-cancelled",
+                                            _ => "status-pending"
+                                        };
+                                    }
+                                    <span class="status-badge @statusClass">@statusText</span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="/AdminOrder/Detail/@order.OrderId" class="btn-action btn-detail">
+                                            <i class="fas fa-eye"></i>
+                                            Chi tiết
+                                        </a>
+                                        @if (order.OrderStatus == "Pending")
+                                        {
+                                            <form method="post" action="/AdminOrder/UpdateStatus" style="display:inline;">
+                                                <input type="hidden" name="id" value="@order.OrderId" />
+                                                <input type="hidden" name="status" value="Paid" />
+                                                <button type="submit" class="btn-action btn-complete">
+                                                    <i class="fas fa-check"></i>
+                                                    Hoàn thành
+                                                </button>
+                                            </form>
+                                            <form method="post" action="/AdminOrder/UpdateStatus" style="display:inline;">
+                                                <input type="hidden" name="id" value="@order.OrderId" />
+                                                <input type="hidden" name="status" value="Cancelled" />
+                                                <button type="submit" class="btn-action btn-cancel" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
+                                                    <i class="fas fa-times"></i>
+                                                    Hủy
+                                                </button>
+                                            </form>
+                                        }
+                                        else if (order.OrderStatus == "Paid")
+                                        {
+                                            <button class="btn-action btn-disabled" disabled>
+                                                <i class="fas fa-check-circle"></i>
+                                                Đã hoàn thành
+                                            </button>
+                                        }
+                                        else if (order.OrderStatus == "Cancelled")
+                                        {
+                                            <button class="btn-action btn-disabled" disabled>
+                                                <i class="fas fa-ban"></i>
+                                                Đã hủy
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">📦</div>
+                    <h3>Chưa có đơn hàng nào</h3>
+                    <p>Các đơn hàng sẽ hiển thị tại đây khi có khách hàng đặt hàng.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
 
-                <td>
-                    <a href="/AdminOrder/Detail/@order.OrderId" class="btn btn-sm btn-info mb-1">Xem chi tiết</a>
+<script>
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const tableRows = document.querySelectorAll('#ordersTable tbody tr');
 
-                    @if (order.OrderStatus == "Pending")
-                    {
-                        <form method="post" action="/AdminOrder/UpdateStatus" style="display:inline;">
-                            <input type="hidden" name="id" value="@order.OrderId" />
-                            <input type="hidden" name="status" value="Paid" />
-                            <button type="submit" class="btn btn-sm btn-success mb-1">Hoàn thành</button>
-                        </form>
+        tableRows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
 
-                        <form method="post" action="/AdminOrder/UpdateStatus" style="display:inline;">
-                            <input type="hidden" name="id" value="@order.OrderId" />
-                            <input type="hidden" name="status" value="Cancelled" />
-                            <button type="submit" class="btn btn-sm btn-danger">Hủy</button>
-                        </form>
-                    }
-                    else if (order.OrderStatus == "Paid")
-                    {
-                        <button class="btn btn-sm btn-outline-success" disabled>Đã hoàn thành</button>
-                    }
-                    else if (order.OrderStatus == "Cancelled")
-                    {
-                        <button class="btn btn-sm btn-outline-danger" disabled>Đã hủy</button>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    // Add smooth scrolling and animations
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate stat cards on load
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+
+        // Animate table rows on load
+        const tableRows = document.querySelectorAll('#ordersTable tbody tr');
+        tableRows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(-20px)';
+            setTimeout(() => {
+                row.style.transition = 'all 0.4s ease';
+                row.style.opacity = '1';
+                row.style.transform = 'translateX(0)';
+            }, index * 50);
+        });
+    });
+
+    // Confirm delete with better UX
+    document.querySelectorAll('.btn-cancel').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            if (!confirm('⚠️ Bạn có chắc chắn muốn hủy đơn hàng này?\n\nHành động này không thể hoàn tác.')) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
