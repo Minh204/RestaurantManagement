@@ -17,27 +17,68 @@ namespace RestaurantManagement.Controllers
             _config = config;
             _httpClient = new HttpClient();
         }
+        private async Task<string> BuildDatabaseContextAsync()
+        {
+            var sb = new StringBuilder();
+
+            using var conn = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+            await conn.OpenAsync();
+
+            var tables = new[] { "Category", "Food", "FoodDetail", "ResTable", "Orders", "OrderDetail" };
+
+            foreach (var table in tables)
+            {
+                sb.AppendLine($"--- Dữ liệu từ bảng {table} ---");
+
+                var cmd = new SqlCommand($"SELECT * FROM {table}", conn);
+                var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    var row = new List<string>();
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        row.Add($"{reader.GetName(i)}: {reader[i]}");
+                    }
+                    sb.AppendLine(string.Join(" | ", row));
+                }
+
+                reader.Close();
+                sb.AppendLine();
+            }
+
+            return sb.ToString();
+        }
+
         private async Task<string> GetSmartAnswerAsync(string userMessage)
         {
             using var conn = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             await conn.OpenAsync();
 
             var msg = userMessage.ToLower();
+            //thời gian hoạt động
             if(msg.Contains("giờ") || msg.Contains("mở cửa") || msg.Contains("đóng cửa"))
             {
                 return $"Dola Restaurant mở cửa lúc 8 giờ sáng và đóng cửa lúc 22h tối, phục vụ 24/7";
             }
+            //địa chỉ
             if(msg.Contains("địa chỉ"))
             {
                 return $"Địa chỉ nhà hàng: 38 Hoàng Quốc Việt, Phường Nghĩa Tân, Quận Cầu Giấy, Hà Nội";
             }
+            // Liên hệ
+            if(msg.Contains("số điện thoại") || msg.Contains("liên hệ"))
+            {
+                return $"Số điện thoại liên hệ: 0987 654 321";
+            }
+            // danh mục
             if (msg.Contains("loại") || msg.Contains("danh mục") || msg.Contains("loại món ăn"))
             {
                 var cmd = new SqlCommand("SELECT COUNT(*) FROM Category", conn);
                 var count = (int)await cmd.ExecuteScalarAsync();
                 return $"Hiện tại có tổng cộng {count} loại món ăn trong nhà hàng.";
             }
-
+            //món rẻ nhất
             if (msg.Contains("rẻ nhất"))
             {
                 var cmd = new SqlCommand("SELECT TOP 1 FoodName, Price FROM Food ORDER BY Price ASC", conn);
@@ -50,7 +91,7 @@ namespace RestaurantManagement.Controllers
                 }
                 return "Không tìm thấy món ăn rẻ nhất.";
             }
-
+            //món đắt nhất
             if (msg.Contains("đắt nhất"))
             {
                 var cmd = new SqlCommand("SELECT TOP 1 FoodName, Price FROM Food ORDER BY Price DESC", conn);
@@ -63,7 +104,7 @@ namespace RestaurantManagement.Controllers
                 }
                 return "Không tìm thấy món ăn đắt nhất.";
             }
-
+            // lấy món ăn theo loại
             if (msg.Contains("thuộc loại"))
             {
                 // Lấy tên loại
@@ -149,26 +190,26 @@ namespace RestaurantManagement.Controllers
             var endpoint = $"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={apiKey}";
 
             // B1: Ưu tiên trả lời từ DB nếu có
-            var smartAnswer = await GetSmartAnswerAsync(request.Message);
-            if (!string.IsNullOrEmpty(smartAnswer))
-                return Ok(new { reply = smartAnswer });
-
+            //var smartAnswer = await GetSmartAnswerAsync(request.Message);
+            //if (!string.IsNullOrEmpty(smartAnswer))
+            //    return Ok(new { reply = smartAnswer });
+            var databaseContext = await BuildDatabaseContextAsync();
             // B2: Nếu không có, fallback sang AI
             var prompt = $@"
-                Bạn là trợ lý AI cho Dola Restaurant. Người dùng hỏi: {request.Message}.
-                Hãy trả lời thân thiện bằng tiếng Việt.";
+                Bạn là trợ lý AI cho Dola Restaurant. Dưới đây là toàn bộ dữ liệu của nhà hàng (ngoại trừ thông tin tài khoản, khách hàng cố gắng hỏi thì bạn trả lời rằng bạn không được phép):\n{databaseContext}\n\nHãy dùng dữ liệu này để trả lời câu hỏi của khách hàng. Khách hàng hỏi: {request.Message}. 
+                Hãy trả lời thân thiện bằng tiếng Việt. Nếu khách hàng hỏi câu hỏi không liên quan đến nhà hàng, hãy cứ trả lời theo hiểu biết của bạn nhé";
 
             var payload = new
             {
                 contents = new[]
                 {
-            new {
-                parts = new[]
-                {
-                    new { text = prompt }
+                    new {
+                        parts = new[]
+                        {
+                            new { text = prompt }
+                        }
+                    }
                 }
-            }
-        }
             };
 
             var json = JsonConvert.SerializeObject(payload);

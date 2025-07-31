@@ -72,6 +72,8 @@ namespace RestaurantManagement.Controllers
         {
             return new List<SelectListItem>
         {
+            new SelectListItem { Text = "08:00 - 09:00", Value = "08:00 - 09:00" },
+            new SelectListItem { Text = "09:00 - 10:00", Value = "09:00 - 10:00" },
             new SelectListItem { Text = "10:00 - 11:00", Value = "10:00 - 11:00" },
             new SelectListItem { Text = "11:00 - 12:00", Value = "11:00 - 12:00" },
             new SelectListItem { Text = "12:00 - 13:00", Value = "12:00 - 13:00" },
@@ -79,6 +81,7 @@ namespace RestaurantManagement.Controllers
             new SelectListItem { Text = "18:00 - 19:00", Value = "18:00 - 19:00" },
             new SelectListItem { Text = "19:00 - 20:00", Value = "19:00 - 20:00" },
             new SelectListItem { Text = "20:00 - 21:00", Value = "20:00 - 21:00" },
+            new SelectListItem { Text = "21:00 - 22:00", Value = "21:00 - 22:00" }
         };
         }
         [HttpGet]

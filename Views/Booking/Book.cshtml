@@ -30,7 +30,7 @@
 
             <div class="form-group">
                 <label class="form-label">Chọn bàn</label>
-                <select asp-for="TableId" asp-items="Model.Tables" class="form-select">
+                <select asp-for="TableId" asp-items="Model.Tables" class="form-select" required>
                     <option value="">-- Chọn bàn phù hợp --</option>
                 </select>
                 <div class="input-icon">🪑</div>
@@ -38,7 +38,7 @@
 
             <div class="form-group">
                 <label class="form-label">Khung giờ</label>
-                <select asp-for="TimeSlot" asp-items="Model.TimeSlots" class="form-select">
+                <select asp-for="TimeSlot" asp-items="Model.TimeSlots" class="form-select" required>
                     <option value="">-- Chọn thời gian --</option>
                 </select>
                 <div class="input-icon">⏰</div>

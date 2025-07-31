@@ -3,7 +3,6 @@
     margin: 40px 0 40px 0;
     position: relative;
     overflow: hidden;
-    border-radius: 15px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.2);
     background: #fff;
 }
@@ -29,7 +28,7 @@
 }
 
 .slide-2 {
-    background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1981&q=80');
+    background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/food/Pizza.jpg');
 }
 
 .slide-3 {
@@ -128,10 +127,10 @@
     background: rgba(255,255,255,0.9);
     border: none;
     color: #333;
-    font-size: 28px;
-    padding: 15px 20px;
+    font-size: 30px;
+    padding: 20px;
     cursor: pointer;
-    border-radius: 50%;
+    border-radius: 30%;
     transition: all 0.3s ease;
     z-index: 10;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
