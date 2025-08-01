@@ -14,7 +14,10 @@ namespace RestaurantManagement.Controllers
         }
         public IActionResult Index()
         {
-            var accountId = int.Parse(User.FindFirst("AccountId").Value);
+            var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == "AccountId");
+            if (accountIdClaim == null) return RedirectToAction("Login", "Account");
+
+            int accountId = int.Parse(accountIdClaim.Value);
             var orders = new List<OrderViewModel>();
 
             using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
