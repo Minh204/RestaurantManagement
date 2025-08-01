@@ -194,7 +194,7 @@
                 </div>
 
                 <div class="form-floating password-field">
-                    <input asp-for="Password" class="form-control" type="password" placeholder="Nhập mật khẩu">
+                    <input asp-for="Password" class="form-control" type="password" placeholder="Nhập mật khẩu" required min="6">
                     <label asp-for="Password">
                         <i class="fas fa-lock me-2"></i>@Html.DisplayNameFor(m => m.Password)
                     </label>

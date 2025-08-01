@@ -259,7 +259,7 @@
                     tại nhà hàng chúng tôi!
                 </p>
                 <div class="hero-buttons">
-                    <a href="/reservation" class="btn btn-custom">
+                    <a href="/booking/book" class="btn btn-custom">
                         <i class="fas fa-calendar-alt"></i>Đặt Bàn Ngay
                     </a>
                     <a href="/home/menu" class="btn btn-outline">
@@ -643,6 +643,12 @@
         </div>
     </section>
 </body>
+<!-- jQuery trước -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- toastr sau -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Animate stats when in view
@@ -681,18 +687,18 @@
     });
     //Add to Cart
     function addToCart(foodId) {
-        fetch('/cart/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `foodId=${foodId}&quantity=1`
+    fetch('/cart/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `foodId=${foodId}&quantity=1`
         })
         .then(response => {
             if (response.redirected) {
                 window.location.href = response.url;
             } else {
-                alert("Đã thêm món vào giỏ!");
+                toastr.success("Đã thêm món vào giỏ!", "Thành công", { timeOut: 2000 });
             }
         });
     }
