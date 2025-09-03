@@ -1,5 +1,8 @@
 ﻿@model MenuViewModel
 <link rel="stylesheet" href="~/css/menu.css" asp-append-version="true" />
+@{
+    ViewData["Title"] = "Menu";
+}
 <style>
     :root {
         --primary-color: #ff6b6b;
@@ -287,7 +290,6 @@
         padding: 1rem;
     }
 
-    }
 
     .loading-shimmer {
         background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);

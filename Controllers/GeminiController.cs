@@ -24,7 +24,7 @@ namespace RestaurantManagement.Controllers
             using var conn = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             await conn.OpenAsync();
 
-            var tables = new[] { "Category", "Food", "FoodDetail", "ResTable", "Orders", "OrderDetail" };
+            var tables = new[] { "Floors", "Category", "Food", "FoodDetail", "ResTable", "Orders", "OrderDetail" };
 
             foreach (var table in tables)
             {
